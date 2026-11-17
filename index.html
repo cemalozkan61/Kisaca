@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kısaca</title>
+<meta name="description" content="Günün özeti beş dakikada, yanında günde bir bulmaca: Günün İşlemi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: gazete manşeti solda okunur, Günün İşlemi sağda yapışık bir oyun tahtası; telefonda tek sütun. */
+:root {
+  --paper: #ECEEF1;
+  --surface: #FFFFFF;
+  --ink: #12151B;
+  --muted: #5A6371;
+  --rule: #C6CCD4;
+  --accent: #2340D2;
+  --panel: #2340D2;
+  --panel-deep: #142A9E;
+  --tile: #FFC72C;
+  --tile-edge: #C99500;
+  --tile-ink: #1B1400;
+  --bad: #FF8A7A;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Newsreader", "Iowan Old Style", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0D1015;
+    --surface: #161A21;
+    --ink: #E8EBEF;
+    --muted: #9AA3AF;
+    --rule: #2B313B;
+    --accent: #8EA0FF;
+    --panel: #1F37BE;
+    --panel-deep: #0F1F78;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0D1015;
+  --surface: #161A21;
+  --ink: #E8EBEF;
+  --muted: #9AA3AF;
+  --rule: #2B313B;
+  --accent: #8EA0FF;
+  --panel: #1F37BE;
+  --panel-deep: #0F1F78;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent); text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 56px; }
+
+/* ---------- Masthead ---------- */
+.mast { padding-top: 26px; }
+.mast-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(64px, 13vw, 128px);
+  line-height: .82;
+  letter-spacing: -0.055em;
+  font-variation-settings: "opsz" 96;
+  margin: 0;
+}
+.wordmark .dot { color: var(--accent); }
+.tagline {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  max-width: 22ch;
+  text-align: right;
+}
+@media (max-width: 640px) { .tagline { text-align: left; max-width: none; margin-bottom: 0; } }
+.folio {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  margin-top: 18px;
+  border-top: 4px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 8px 0;
+  font-family: var(--font-display);
+  font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.teaser {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 0; border-radius: 14px;
+  background: var(--panel); color: #fff;
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+  cursor: pointer; text-align: left;
+}
+.teaser b { color: var(--tile); font-weight: 800; font-variant-numeric: tabular-nums; }
+.teaser .go { font-weight: 700; white-space: nowrap; }
+
+/* ---------- Grid ---------- */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; margin-top: 28px; }
+@media (min-width: 1000px) {
+  .layout { grid-template-columns: minmax(0, 1fr) 384px; gap: 60px; }
+  .game-col { position: sticky; top: 20px; align-self: start; }
+  .teaser { display: none; }
+  .tagline { margin-bottom: 14px; }
+}
+
+/* ---------- Quick ---------- */
+.quick { border-left: 4px solid var(--accent); padding: 2px 0 2px 18px; }
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 8px;
+}
+.quick ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; counter-reset: q; }
+.quick li {
+  counter-increment: q;
+  font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.3;
+  display: grid; grid-template-columns: 22px 1fr; gap: 6px;
+}
+.quick li::before { content: counter(q); color: var(--muted); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* ---------- Stories ---------- */
+.stories { margin-top: 36px; display: grid; gap: 0; }
+.story {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 12px;
+  padding: 22px 0;
+  border-top: 1px solid var(--rule);
+}
+.story-num {
+  font-family: var(--font-display); font-weight: 800; font-size: 26px; line-height: 1.05;
+  color: var(--muted); opacity: .55; font-variant-numeric: tabular-nums;
+}
+.kicker {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 6px;
+}
+.story h3 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 24px; line-height: 1.15; letter-spacing: -0.012em;
+  margin: 0 0 8px; text-wrap: balance;
+}
+.summary { margin: 0; max-width: 64ch; }
+.why {
+  margin: 10px 0 0; max-width: 64ch;
+  font-size: 16.5px; color: var(--muted);
+}
+.why b { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: 14.5px; }
+.note { margin: 8px 0 0; font-size: 14.5px; font-style: italic; color: var(--muted); }
+.src {
+  margin: 10px 0 0;
+  font-family: var(--font-display); font-size: 13.5px; color: var(--muted);
+}
+.src a { color: var(--muted); }
+.src a:hover { color: var(--accent); }
+
+.story.lead { border-top: 4px solid var(--ink); padding-top: 18px; grid-template-columns: minmax(0, 1fr); }
+.story.lead .story-num { display: none; }
+.story.lead h3 { font-size: clamp(30px, 4.6vw, 46px); line-height: 1.04; letter-spacing: -0.025em; margin-bottom: 12px; }
+.story.lead .summary { font-size: 20px; }
+
+/* ---------- Day figure ---------- */
+.figure {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 8px 22px;
+  margin: 8px 0 10px; padding: 18px 0;
+  border-top: 4px solid var(--ink); border-bottom: 1px solid var(--ink);
+}
+.figure .big {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(64px, 11vw, 108px); line-height: .8; letter-spacing: -0.05em;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.figure p { margin: 0; }
+.figure .cap { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.3; }
+@media (max-width: 520px) { .figure { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Briefs ---------- */
+.briefs-wrap { margin-top: 30px; border-top: 4px solid var(--ink); padding-top: 14px; }
+.briefs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.briefs li {
+  display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--rule);
+  font-size: 17px; line-height: 1.45;
+}
+.briefs .tag {
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--muted); padding-top: 4px;
+}
+.briefs .bsrc { font-family: var(--font-display); font-size: 13px; color: var(--muted); white-space: nowrap; }
+.briefs .bsrc a { color: var(--muted); }
+@media (max-width: 520px) { .briefs li { grid-template-columns: minmax(0, 1fr); gap: 2px; } .briefs .tag { padding-top: 0; } }
+
+.foot {
+  margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--rule);
+  font-family: var(--font-display); font-size: 14px; color: var(--muted);
+  display: grid; gap: 4px;
+}
+.foot p { margin: 0; max-width: 70ch; }
+
+/* ---------- Game ---------- */
+.game {
+  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--panel) 88%, #fff) 0%, var(--panel) 55%, var(--panel-deep) 100%);
+  color: #fff;
+  border-radius: 24px;
+  padding: 20px 18px 18px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 18px 40px -22px rgba(20, 30, 110, .65);
+  font-family: var(--font-display);
+}
+.game :focus-visible { outline-color: var(--tile); }
+.g-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.g-title { margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em; }
+.g-meta { font-weight: 600; font-size: 14px; opacity: .85; font-variant-numeric: tabular-nums; }
+.g-sub { margin: 2px 0 0; font-size: 14px; opacity: .8; }
+
+.target {
+  margin: 16px 0 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 16px 12px;
+  border-radius: 16px;
+  background: rgba(4, 8, 40, .38);
+  box-shadow: inset 0 2px 0 rgba(0,0,0,.28), inset 0 -1px 0 rgba(255,255,255,.08);
+}
+.t-label { font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; opacity: .8; }
+.t-num {
+  font-weight: 800; font-size: 66px; line-height: 1; letter-spacing: -0.03em;
+  color: var(--tile); font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 22px rgba(255, 199, 44, .35);
+}
+.t-best { text-align: right; font-weight: 600; font-size: 13px; opacity: .9; font-variant-numeric: tabular-nums; }
+.t-best b { display: block; font-size: 22px; font-weight: 800; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tile {
+  appearance: none; border: 0; cursor: pointer;
+  height: 70px; border-radius: 14px;
+  background: var(--tile); color: var(--tile-ink);
+  font-family: var(--font-display); font-weight: 800; font-size: 34px; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 5px 0 var(--tile-edge);
+  transition: transform .08s ease, box-shadow .08s ease, background-color .12s ease;
+}
+.tile.long { font-size: 25px; }
+.tile:hover { background: #FFD24F; }
+.tile:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--tile-edge); }
+.tile.sel { background: #fff; box-shadow: 0 5px 0 #B9C2EA, 0 0 0 3px var(--tile); transform: translateY(-2px); }
+.tile.used {
+  background: transparent; box-shadow: none; color: transparent; cursor: default;
+  outline: 2px dashed rgba(255,255,255,.28); outline-offset: -2px;
+}
+.tile.pop { animation: pop .32s cubic-bezier(.3, 1.6, .5, 1); }
+.tile.shake { animation: shake .3s ease; }
+.tile.win { animation: hop .6s cubic-bezier(.3, 1.4, .5, 1) both; }
+@keyframes pop { 0% { transform: scale(.7); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes hop { 0% { transform: translateY(0); } 40% { transform: translateY(-14px); } 100% { transform: translateY(0); } }
+.t-num.flash { animation: flash .9s ease 2; }
+@keyframes flash { 50% { color: #fff; text-shadow: 0 0 30px rgba(255,255,255,.7); } }
+
+.ops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.op {
+  appearance: none; cursor: pointer;
+  height: 54px; border-radius: 14px;
+  background: rgba(255,255,255,.12); color: #fff;
+  border: 1px solid rgba(255,255,255,.24);
+  font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1;
+}
+.op:hover { background: rgba(255,255,255,.2); }
+.op.sel { background: #fff; color: var(--panel); border-color: #fff; }
+
+.msg { min-height: 44px; margin: 12px 2px 0; font-size: 15px; font-weight: 500; line-height: 1.35; }
+.msg.err { color: var(--bad); }
+
+.actions { display: flex; gap: 8px; }
+.ghost {
+  flex: 1 1 0; appearance: none; cursor: pointer;
+  padding: 10px 8px; border-radius: 999px;
+  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.38);
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
+}
+.ghost:hover { background: rgba(255,255,255,.1); }
+.ghost:disabled { opacity: .4; cursor: default; }
+.ghost.armed { background: var(--tile); color: var(--tile-ink); border-color: var(--tile); flex-grow: 2; }
+
+.reveal {
+  display: block; width: 100%; margin-top: 10px;
+  appearance: none; cursor: pointer; background: transparent; border: 0; color: #fff;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px; opacity: .85;
+  text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255,255,255,.45);
+  padding: 6px;
+}
+.reveal:hover { opacity: 1; }
+.reveal.armed { opacity: 1; text-decoration: none; background: rgba(255,255,255,.14); border-radius: 999px; }
+.solution[open] summary { margin-bottom: 4px; }
+.solution ol li { font-size: 17px; font-weight: 700; padding: 3px 0; }
+.result { margin-top: 14px; padding: 16px; border-radius: 16px; background: rgba(255,255,255,.1); }
+.result[hidden] { display: none; }
+.r-stars { font-size: 30px; letter-spacing: 4px; color: var(--tile); line-height: 1; }
+.r-stars .off { color: rgba(255,255,255,.25); }
+.r-head { margin: 8px 0 2px; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.r-line { margin: 0; font-size: 14px; opacity: .9; font-variant-numeric: tabular-nums; }
+.share {
+  margin-top: 12px; width: 100%;
+  appearance: none; cursor: pointer; border: 0;
+  padding: 12px; border-radius: 999px;
+  background: var(--tile); color: var(--tile-ink);
+  font-family: var(--font-display); font-weight: 800; font-size: 16px;
+  box-shadow: 0 4px 0 var(--tile-edge);
+}
+.share:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--tile-edge); }
+#share-fallback {
+  width: 100%; margin-top: 10px; min-height: 92px; resize: none;
+  border-radius: 10px; border: 0; padding: 10px;
+  font: 500 14px/1.4 var(--font-display); color: var(--ink); background: var(--surface);
+}
+.solution { margin-top: 12px; font-size: 14px; }
+.solution summary { cursor: pointer; font-weight: 700; }
+.solution ol { margin: 8px 0 0; padding-left: 20px; font-variant-numeric: tabular-nums; }
+.next { margin: 12px 0 0; font-size: 13px; opacity: .85; font-variant-numeric: tabular-nums; }
+
+.stats {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); text-align: center;
+  margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2);
+}
+.stats b { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stats span { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
+
+.howto { margin-top: 14px; font-size: 14px; line-height: 1.45; }
+.howto summary { cursor: pointer; font-weight: 700; }
+.howto p { margin: 8px 0 0; opacity: .92; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile, .tile.pop, .tile.shake, .tile.win, .t-num.flash { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="mast-top">
+      <h1 class="wordmark">Kısaca<span class="dot">.</span></h1>
+      <p class="tagline">Günün özeti beş dakikada, yanında tek bir bulmaca.</p>
+    </div>
+    <div class="folio">
+      <span id="folio-date"></span>
+      <span id="folio-ed"></span>
+    </div>
+    <button class="teaser" id="teaser" type="button">
+      <span>Günün İşlemi <b id="teaser-no"></b> · Hedef <b id="teaser-target"></b></span>
+      <span class="go" id="teaser-go">Oyna ↓</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <main class="news-col">
+      <section class="quick" aria-labelledby="quick-h">
+        <p class="eyebrow" id="quick-h">Vaktin yoksa</p>
+        <ol id="quick"></ol>
+      </section>
+
+      <section class="stories" id="stories" aria-label="Günün haberleri"></section>
+
+      <section class="briefs-wrap" aria-labelledby="briefs-h">
+        <p class="eyebrow" id="briefs-h">Kısa kısa</p>
+        <ul class="briefs" id="briefs"></ul>
+      </section>
+
+      <footer class="foot">
+        <p id="asof"></p>
+        <p>Kısaca, günün önemli haberlerini farklı kaynaklardan derleyip kısaltır. Ayrıntı için her haberin altındaki kaynak bağlantılarına göz atın.</p>
+        <p>Günün İşlemi her gece 00.00'da (TSİ) yenilenir.</p>
+      </footer>
+    </main>
+
+    <aside class="game-col" id="oyun" aria-label="Günün İşlemi oyunu">
+      <section class="game">
+        <div class="g-head">
+          <h2 class="g-title">Günün İşlemi</h2>
+          <span class="g-meta"><span id="g-no"></span> · <span id="g-time">0:00</span></span>
+        </div>
+        <p class="g-sub">Sayıları dört işlemle birleştir, hedefi tuttur.</p>
+
+        <div class="target">
+          <div>
+            <div class="t-label">Hedef</div>
+            <div class="t-num" id="t-num">000</div>
+          </div>
+          <div class="t-best">En yakın<b id="t-best">0</b><span id="t-diff"></span></div>
+        </div>
+
+        <div class="tiles" id="tiles">
+          <button class="tile" type="button" id="tile-0"></button>
+          <button class="tile" type="button" id="tile-1"></button>
+          <button class="tile" type="button" id="tile-2"></button>
+          <button class="tile" type="button" id="tile-3"></button>
+          <button class="tile" type="button" id="tile-4"></button>
+          <button class="tile" type="button" id="tile-5"></button>
+        </div>
+
+        <div id="play-controls">
+          <div class="ops" role="group" aria-label="İşlemler">
+            <button class="op" type="button" id="op-add" data-op="+" aria-label="Topla">+</button>
+            <button class="op" type="button" id="op-sub" data-op="−" aria-label="Çıkar">−</button>
+            <button class="op" type="button" id="op-mul" data-op="×" aria-label="Çarp">×</button>
+            <button class="op" type="button" id="op-div" data-op="÷" aria-label="Böl">÷</button>
+          </div>
+          <p class="msg" id="msg" aria-live="polite"></p>
+          <div class="actions">
+            <button class="ghost" type="button" id="btn-undo">Geri al</button>
+            <button class="ghost" type="button" id="btn-reset">Baştan</button>
+            <button class="ghost" type="button" id="btn-end">Bitir</button>
+          </div>
+          <button class="reveal" type="button" id="btn-reveal">Bulamadın mı? Cevabı göster</button>
+        </div>
+
+        <div class="result" id="result" hidden>
+          <div class="r-stars" id="r-stars" aria-hidden="true"></div>
+          <p class="r-head" id="r-head"></p>
+          <p class="r-line" id="r-line"></p>
+          <button class="share" type="button" id="btn-share">Sonucu kopyala</button>
+          <textarea id="share-fallback" readonly hidden aria-label="Paylaşım metni"></textarea>
+          <details class="solution" id="solution-box">
+            <summary id="solution-sum">Bir çözüm</summary>
+            <ol id="solution"></ol>
+          </details>
+          <p class="next" id="next"></p>
+        </div>
+
+        <div class="stats" aria-label="İstatistiklerin">
+          <div><b id="s-played">0</b><span>Oyun</span></div>
+          <div><b id="s-exact">0</b><span>Tam</span></div>
+          <div><b id="s-streak">0</b><span>Seri</span></div>
+          <div><b id="s-max">0</b><span>Rekor</span></div>
+        </div>
+
+        <details class="howto">
+          <summary>Nasıl oynanır?</summary>
+          <p>Bir sayıya, sonra bir işleme, sonra ikinci sayıya dokun. İki sayı birleşip yeni bir sayıya dönüşür ve sıradaki işlem için seçili kalır.</p>
+          <p>Her sayıyı bir kez kullanırsın, hepsini kullanmak zorunda değilsin. Çıkarmada büyükten küçük çıkar; bölme tam çıkmalı.</p>
+          <p>Tam isabet 3 yıldız. Tutturamazsan "Bitir" ile en yakın sayınla bitir: 5 farka kadar 2, 10 farka kadar 1 yıldız.</p>
+        </details>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script id="kisaca-data" type="application/json">
+{
+  "date": "2026-11-17",
+  "dateLabel": "17 Kasım 2026, Salı",
+  "edition": "Akşam baskısı",
+  "readMin": 4,
+  "asOf": "Haberler 17 Kasım 2026 akşamı itibarıyla derlendi.",
+  "quick": [
+    "Hürmüz'de gerilim tırmanıyor; ABD'nin üçüncü uçak gemisi bölgeye ulaştı.",
+    "Fon soruşturmasında 7 şüpheli daha tutuklandı.",
+    "A Milli Takım, Uluslar Ligi'nde B Ligi'ne düştü."
+  ],
+  "stories": [
+    {
+      "tags": ["Manşet", "Dünya"],
+      "title": "Hürmüz'de gerilim büyüyor: ABD'nin üçüncü uçak gemisi bölgede",
+      "summary": "USS Theodore Roosevelt Orta Doğu'ya ulaştı ve bölgedeki ABD uçak gemisi sayısı üçe çıktı. ABD güçleri Hürmüz Boğazı'ndaki Keşm Adası'nı yeniden vurdu. Çatışmaları bitirip boğazı yeniden açmaya yönelik görüşmeler tıkanmış durumda; ABD Başkan Yardımcısı JD Vance ise savaşın uzun soluklu olmayacağını söylüyor.",
+      "why": "Hürmüz, dünya petrol ticaretinin en kritik geçidi. Buradaki tıkanıklık akaryakıt fiyatları üzerinden Türkiye'yi de doğrudan etkiliyor.",
+      "sources": [
+        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"},
+        {"name": "New Straits Times", "url": "https://nst.com.my/amp/news/regional/2026/11/1580014/todays-news-pictures-tuesday-november-17-2026"}
+      ]
+    },
+    {
+      "tags": ["Türkiye", "Ekonomi"],
+      "title": "Fon soruşturmasında 7 tutuklama daha",
+      "summary": "İstanbul'da yürütülen fon ve hisse manipülasyonu soruşturmasında 7 şüpheli daha tutuklandı, bazı şüphelilerin mal varlıklarına el konuldu. Adalet Bakanı Akın Gürlek soruşturmanın derinleştiğini açıkladı. Bakanlığın 9 Kasım tarihli tablosuna göre dosyada 464 şüpheli vardı, bunların 120'si tutukluydu.",
+      "why": "Soruşturma, küçük yatırımcıların birikimlerini ve sermaye piyasasına güveni doğrudan ilgilendiriyor.",
+      "sources": [
+        {"name": "TRT Haber", "url": "https://www.trthaber.com/son-dakika-haberleri"},
+        {"name": "Habertürk", "url": "https://www.haberturk.com/son-dakika-haberleri"},
+        {"name": "Bloomberg HT", "url": "https://www.bloomberght.com/gurlek-fon-sorusturmasinda-464-supheli-120-tutuklu-3793928"}
+      ]
+    },
+    {
+      "tags": ["Türkiye", "Enerji"],
+      "title": "Irak petrolü yeniden Türkiye hattından akıyor",
+      "summary": "Irak Petrol Bakanı, iki ülke arasındaki eski boru hattı üzerinden ham petrol sevkiyatının yeniden başladığını duyurdu. Hürmüz'deki aksama nedeniyle Irak, petrolünü bir süredir Suriye'deki Baniyas Limanı gibi alternatif rotalardan da taşıyor.",
+      "why": "Körfez rotası tıkandıkça Türkiye üzerinden Akdeniz'e uzanan hatların önemi artıyor.",
+      "sources": [
+        {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"},
+        {"name": "Gazete Oksijen", "url": "https://gazeteoksijen.com/dunya/rota-turkiye-yunanistan-ve-italya-irakta-colde-10-bin-tirlik-dev-petrol-operasyonu-296005"}
+      ]
+    },
+    {
+      "tags": ["Spor"],
+      "title": "Milliler, Uluslar Ligi'nde B Ligi'ne düştü",
+      "summary": "A Milli Takım, A Ligi 1. Grup'u 6 maçta 6 yenilgi ve −11 averajla son sırada tamamladı; son maçta Fransa'ya 2-1 kaybetti. Play-off umudu Sırbistan'ın Yunanistan'a en az 5 farkla yenilmesine bağlıydı. Bu gerçekleşmeyince Türkiye doğrudan B Ligi'ne düştü.",
+      "sources": [
+        {"name": "Yeni Çağ", "url": "https://www.yenicaggazetesi.com/turkiyenin-uluslar-ligindeki-kaderi-yunanistan-sirbistan-macina-bagli-1091264h.htm"},
+        {"name": "Yeni Şafak", "url": "https://www.yenisafak.com/"}
+      ]
+    },
+    {
+      "tags": ["Dünya"],
+      "title": "Trump Asya turunda: Manila'dan sonra Xi ve Putin'le üçlü zirve",
+      "summary": "Trump, Japonya, Avustralya ve Hindistan'la iki yıl aradan sonraki ilk Quad liderler toplantısı ve ABD-ASEAN zirvesi için Manila'da. Ardından APEC için Çin'in Shenzhen kentine geçecek; Xi Jinping ve Vladimir Putin'le nükleer silahlar, İran ve Ukrayna'yı görüşecek.",
+      "sources": [
+        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}
+      ]
+    },
+    {
+      "tags": ["Dünya", "Ukrayna"],
+      "title": "Köprüler hedefte: Ukrayna Kerç'i, Rusya Kiev'i vurdu",
+      "summary": "Ukrayna gece düzenlediği İHA saldırısında Rusya'yı Kırım'a bağlayan Kerç Köprüsü'nü vurdu; trafik geçici olarak kısıtlandı, yaklaşık 2 bin araç yolda kaldı. Kiev'deki Rus saldırılarında en az 7 kişi hayatını kaybetti, 50 bin kişi elektriksiz kaldı. Kentin belediye başkanı iki büyük köprünün de vurulduğunu söyledi.",
+      "sources": [
+        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"},
+        {"name": "Daily Digest", "url": "https://dailydigest.com/archive/2026/11/17/"}
+      ]
+    },
+    {
+      "tags": ["Türkiye", "İklim"],
+      "title": "COP31 Antalya'da son haftasında",
+      "summary": "Türkiye'nin ev sahipliğindeki BM İklim Değişikliği Konferansı 9 Kasım'da başladı, 20 Kasım'da sona erecek. Ortak başkanlık modelinde müzakereleri Avustralya yürütüyor. Bakan Kacır, zirvede yapay zekâ destekli bir temiz teknoloji girişimi başlatılacağını açıkladı.",
+      "sources": [
+        {"name": "Heinrich Böll Stiftung", "url": "https://www.boell.de/en/cop-climate-change-conference"},
+        {"name": "TRT Haber", "url": "https://www.trthaber.com/son-dakika-haberleri"}
+      ]
+    },
+    {
+      "tags": ["Piyasalar"],
+      "title": "Euro/dolar 19 ayın dibinde, altın güne yükselişle başladı",
+      "summary": "Euro/dolar paritesi 1,0982'ye inerek son 19 ayın en düşük seviyesini gördü. Gram altın ise sabah saatlerinde yükselişle 6.274 TL civarından işlem gördü.",
+      "note": "Fiyatlar gün içinde değişir; rakamlar haberin verildiği saate aittir.",
+      "sources": [
+        {"name": "Bloomberg HT", "url": "https://www.bloomberght.com/sondakika"},
+        {"name": "Habertürk", "url": "https://www.haberturk.com/bilgi/foto/altin-fiyatlarinda-yeni-gun-yukselisle-basladi-17-kasim-2026-gram-ve-ceyrek-altin-ne-kadar-kac-tl-oldu-3927834"}
+      ]
+    }
+  ],
+  "figureAfter": 4,
+  "figure": {
+    "value": "2.049",
+    "caption": "Rusya'nın son 24 saatte düşürdüğünü açıkladığı Ukrayna İHA'sı.",
+    "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}
+  },
+  "briefs": [
+    {"tag": "Deprem", "text": "AFAD, Van Gölü'nde 4,3 büyüklüğünde bir deprem kaydedildiğini açıkladı.", "source": {"name": "CNN Türk", "url": "https://www.cnnturk.com/turkiye/son-dakika-deprem-17-kasim-bugun-deprem-mi-oldu-nerede-kac-siddetinde-17-kasim-2026-afad-ve-kandilli-rasathanesi-son-depremler-listesi-3494212"}},
+    {"tag": "Hava", "text": "İstanbul için fırtına uyarısı yapıldı. Güncel uyarıları Meteoroloji'den takip edin.", "source": {"name": "Habertürk", "url": "https://www.haberturk.com/son-dakika-haberleri"}},
+    {"tag": "NBA", "text": "Alperen Şengün 23 sayı attı ama Houston Rockets deplasmanda Miami Heat'e 128-110 yenildi.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/11775/17-kasim-2026-sali-gununun-son-dakika-onemli-gelismeleri-cnn-turk-11-30-bulteni"}},
+    {"tag": "Teknoloji", "text": "Anthropic'in Nasdaq halka arzında fiyatlamanın 18 Kasım'da yapılması bekleniyor; aralık hisse başına 70-78 dolar.", "source": {"name": "Renaissance Capital", "url": "https://www.renaissancecapital.com/IPO-Center/News/122657/anthropic-sets-terms-for-61-billion-ipo-targeting-a-1.2-trillion-market-cap"}},
+    {"tag": "Diplomasi", "text": "Çin ve Kanada, gümrük vergisi indirimlerini genişletmek için anlaştı.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-60"}},
+    {"tag": "Asya", "text": "Moğolistan Cumhurbaşkanı Ukhnaagiin Khürelsükh istifa edeceğini açıkladı.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-60"}},
+    {"tag": "Avrupa", "text": "AB, Rusya'nın en zengin kadını ve Wildberries'in kurucusu Tatyana Kim'e yaptırım uyguladı.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}},
+    {"tag": "BM", "text": "128 ülke, hedefini insan müdahalesi olmadan seçen otonom silahlara bağlayıcı sınırlar için Cenevre'de bir araya geldi.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}}
+  ]
+}
+</script>
+
+<script>
+/* GAME-CORE-START */
+function xmur3(str) {
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+/* Çıkarma ve bölmede sıra önemli değil: büyükten küçüğe yapılır. */
+function combine(a, op, b) {
+  const hi = Math.max(a, b), lo = Math.min(a, b);
+  if (op === '+') return { v: a + b, a: a, b: b };
+  if (op === '×') return { v: a * b, a: a, b: b };
+  if (op === '−') return hi === lo ? { err: 'zero' } : { v: hi - lo, a: hi, b: lo };
+  if (op === '÷') return hi % lo !== 0 ? { err: 'div' } : { v: hi / lo, a: hi, b: lo };
+  return { err: 'op' };
+}
+function genPuzzle(dateStr) {
+  const rand = mulberry32(xmur3('kisaca-islem:' + dateStr)());
+  const OPS = ['+', '−', '×', '÷'];
+  for (let attempt = 0; attempt < 4000; attempt++) {
+    const smalls = [];
+    while (smalls.length < 5) {
+      const n = 1 + Math.floor(rand() * 9);
+      if (smalls.filter(function (x) { return x === n; }).length < 2) smalls.push(n);
+    }
+    const bigs = [10, 25, 50, 75, 100];
+    const nums = smalls.concat([bigs[Math.floor(rand() * bigs.length)]]);
+    const idx = [0, 1, 2, 3, 4, 5];
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      const tmp = idx[i]; idx[i] = idx[j]; idx[j] = tmp;
+    }
+    const k = rand() < 0.55 ? 4 : 5;
+    let cur = nums[idx[0]];
+    const steps = [];
+    let ok = true;
+    for (let j = 1; j < k; j++) {
+      const b = nums[idx[j]];
+      const r = rand();
+      let op = r < 0.45 ? '×' : r < 0.75 ? '+' : r < 0.9 ? '−' : '÷';
+      if ((op === '×' || op === '÷') && (b === 1 || cur === 1)) op = '+';
+      const res = combine(cur, op, b);
+      if (res.err) { ok = false; break; }
+      steps.push(res.a + ' ' + op + ' ' + res.b + ' = ' + res.v);
+      cur = res.v;
+    }
+    if (!ok || cur < 101 || cur > 699 || nums.indexOf(cur) !== -1) continue;
+    let trivial = false;
+    for (let i = 0; i < 6 && !trivial; i++) {
+      for (let j = i + 1; j < 6 && !trivial; j++) {
+        for (const op of OPS) {
+          const r2 = combine(nums[i], op, nums[j]);
+          if (!r2.err && r2.v === cur) { trivial = true; break; }
+        }
+      }
+    }
+    if (trivial) continue;
+    return { nums: nums, target: cur, steps: steps };
+  }
+  return { nums: [3, 7, 2, 9, 5, 75], target: 468, steps: ['75 × 3 = 225', '225 + 9 = 234', '234 × 2 = 468'] };
+}
+function starsFor(diff) { return diff === 0 ? 3 : diff <= 5 ? 2 : diff <= 10 ? 1 : 0; }
+/* GAME-CORE-END */
+
+(function () {
+  'use strict';
+  const $ = function (s) { return document.querySelector(s); };
+  const el = function (tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ================= Haberler ================= */
+  let DATA = null;
+  try { DATA = JSON.parse(document.getElementById('kisaca-data').textContent); } catch (e) { DATA = null; }
+
+  function linkTo(src) {
+    const a = el('a', null, src.name);
+    a.href = src.url; a.target = '_blank'; a.rel = 'noopener';
+    return a;
+  }
+  function renderNews() {
+    if (!DATA) return;
+    $('#folio-date').textContent = DATA.dateLabel;
+    $('#folio-ed').textContent = DATA.edition + ' · ' + DATA.stories.length + ' haber · ~' + DATA.readMin + ' dk';
+    $('#asof').textContent = DATA.asOf;
+    ['#quick', '#stories', '#briefs'].forEach(function (s) { $(s).innerHTML = ''; });
+
+    const q = $('#quick');
+    DATA.quick.forEach(function (line) { q.appendChild(el('li', null, line)); });
+
+    const box = $('#stories');
+    DATA.stories.forEach(function (s, i) {
+      const art = el('article', 'story' + (i === 0 ? ' lead' : ''));
+      art.appendChild(el('div', 'story-num', String(i + 1).padStart(2, '0')));
+      const body = el('div', 'story-body');
+      body.appendChild(el('p', 'kicker', s.tags.join(' · ')));
+      body.appendChild(el('h3', null, s.title));
+      body.appendChild(el('p', 'summary', s.summary));
+      if (s.why) {
+        const w = el('p', 'why');
+        w.appendChild(el('b', null, 'Neden önemli? '));
+        w.appendChild(document.createTextNode(s.why));
+        body.appendChild(w);
+      }
+      if (s.note) body.appendChild(el('p', 'note', s.note));
+      const src = el('p', 'src');
+      src.appendChild(document.createTextNode('Kaynak: '));
+      s.sources.forEach(function (x, j) {
+        if (j) src.appendChild(document.createTextNode(' · '));
+        src.appendChild(linkTo(x));
+      });
+      body.appendChild(src);
+      art.appendChild(body);
+      box.appendChild(art);
+
+      if (DATA.figure && i + 1 === DATA.figureAfter) {
+        const f = el('aside', 'figure');
+        f.setAttribute('aria-label', 'Günün sayısı');
+        f.appendChild(el('div', 'big', DATA.figure.value));
+        const wrapP = el('div');
+        wrapP.appendChild(el('p', 'eyebrow', 'Günün sayısı'));
+        wrapP.appendChild(el('p', 'cap', DATA.figure.caption));
+        const fs = el('p', 'src');
+        fs.appendChild(document.createTextNode('Kaynak: '));
+        fs.appendChild(linkTo(DATA.figure.source));
+        wrapP.appendChild(fs);
+        f.appendChild(wrapP);
+        box.appendChild(f);
+      }
+    });
+
+    const ul = $('#briefs');
+    DATA.briefs.forEach(function (b) {
+      const li = el('li');
+      li.appendChild(el('span', 'tag', b.tag));
+      const t = el('span');
+      t.appendChild(document.createTextNode(b.text + ' '));
+      const s = el('span', 'bsrc');
+      s.appendChild(linkTo(b.source));
+      t.appendChild(s);
+      li.appendChild(t);
+      ul.appendChild(li);
+    });
+  }
+  renderNews();
+
+  /* Güncel baskıyı Supabase'den al; alınamazsa sayfadaki yedek baskı kalır. */
+  const SB_URL = 'https://rhwymmgrvvudrdhnmhwk.supabase.co';
+  const SB_KEY = 'sb_publishable_XxZ7ATjRIupBvnF0Fy5N6A_EQAC1Reg';
+  try {
+    fetch(SB_URL + '/rest/v1/editions?select=edition_date,data&published=eq.true&order=edition_date.desc&limit=1', {
+      headers: { apikey: SB_KEY, Accept: 'application/json' }
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
+      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; renderNews(); }
+    }).catch(function () {});
+  } catch (e) { /* çevrimdışı: yedek baskı */ }
+
+  /* ================= Oyun ================= */
+  const TZ = 3 * 3600e3; // Türkiye saati (UTC+3, yaz saati yok)
+  const DAY = 864e5;
+  const EPOCH = Date.UTC(2026, 10, 17);
+  const istDate = function (off) { return new Date(Date.now() + TZ + (off || 0) * DAY).toISOString().slice(0, 10); };
+  const puzzleNo = function (d) { return Math.round((Date.parse(d + 'T00:00:00Z') - EPOCH) / DAY) + 1; };
+  const store = {
+    get: function (k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* tarayıcı saklamaya izin vermiyor */ } }
+  };
+  const fmtTime = function (ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  };
+
+  let P = null; // bulmaca
+  let S = null; // oyun durumu
+  let msgErr = false;
+  let popId = -1, shakeId = -1, celebrate = false;
+
+  function bestOf(tiles, target) {
+    let b = null;
+    tiles.forEach(function (t) {
+      if (t.used) return;
+      const d = Math.abs(t.v - target);
+      if (!b || d < b.d) b = { v: t.v, d: d };
+    });
+    return b;
+  }
+  function freshState(date) {
+    P = genPuzzle(date);
+    const tiles = P.nums.map(function (v, i) { return { id: i, v: v, used: false }; });
+    return {
+      date: date, no: puzzleNo(date), target: P.target, tiles: tiles,
+      sel: null, op: null, hist: [], steps: [],
+      best: bestOf(tiles, P.target), start: null, end: null,
+      done: false, stars: 0, armed: false,
+      msg: 'Bir sayı seç, sonra bir işlem, sonra ikinci sayı.'
+    };
+  }
+  function save() { store.set('kisaca:islem:' + S.date, S); }
+  function say(text, isErr) { S.msg = text; msgErr = !!isErr; }
+  function snap() { return JSON.parse(JSON.stringify({ tiles: S.tiles, steps: S.steps })); }
+
+  function onTile(id) {
+    if (S.done) return;
+    const t = S.tiles[id];
+    if (!t || t.used) return;
+    if (S.start == null) S.start = Date.now();
+    S.armed = false; S.armedReveal = false;
+    if (S.sel == null || S.op == null) {
+      if (S.sel === id) { S.sel = null; say('Seçim kaldırıldı. Bir sayı seç.'); }
+      else { S.sel = id; say(t.v + ' seçildi. Şimdi bir işlem seç.'); }
+    } else if (S.sel === id) {
+      S.sel = null; S.op = null; say('Seçim kaldırıldı. Bir sayı seç.');
+    } else {
+      const a = S.tiles[S.sel];
+      const r = combine(a.v, S.op, t.v);
+      if (r.err) {
+        say(r.err === 'div' ? a.v + ' ile ' + t.v + ' tam bölünmüyor. Başka bir sayı dene.' : 'Eşit iki sayının farkı sıfır olur, bu hamle geçersiz.', true);
+        shakeId = id;
+      } else {
+        S.hist.push(snap());
+        a.used = true;
+        t.v = r.v;
+        S.steps.push(r.a + ' ' + S.op + ' ' + r.b + ' = ' + r.v);
+        S.op = null;
+        S.sel = id;
+        popId = id;
+        S.best = bestOf(S.tiles, S.target);
+        if (r.v === S.target) {
+          finish();
+        } else if (S.tiles.filter(function (x) { return !x.used; }).length === 1) {
+          S.sel = null;
+          say(S.steps[S.steps.length - 1] + '. Sayı kalmadı: geri al ya da en yakın sonuçla bitir.');
+        } else {
+          say(S.steps[S.steps.length - 1] + '. Devam et.');
+        }
+      }
+    }
+    save(); render();
+  }
+  function onOp(op) {
+    if (S.done) return;
+    S.armed = false; S.armedReveal = false;
+    if (S.sel == null) { say('Önce bir sayı seç.', true); render(); return; }
+    S.op = S.op === op ? null : op;
+    if (S.op) say(S.tiles[S.sel].v + ' ' + S.op + ' … İkinci sayıyı seç.');
+    else say(S.tiles[S.sel].v + ' seçili. Bir işlem seç.');
+    save(); render();
+  }
+  function onUndo() {
+    if (S.done || !S.hist.length) return;
+    const h = S.hist.pop();
+    S.tiles = h.tiles; S.steps = h.steps;
+    S.sel = null; S.op = null; S.armed = false;
+    S.best = bestOf(S.tiles, S.target);
+    say('Son hamle geri alındı.');
+    save(); render();
+  }
+  function onReset() {
+    if (S.done || !S.steps.length) return;
+    S.hist.push(snap());
+    S.tiles = P.nums.map(function (v, i) { return { id: i, v: v, used: false }; });
+    S.steps = [];
+    S.sel = null; S.op = null; S.armed = false;
+    S.best = bestOf(S.tiles, S.target);
+    say('Baştan başladın. İstersen geri alabilirsin.');
+    save(); render();
+  }
+  function onEnd() {
+    if (S.done) return;
+    S.armedReveal = false;
+    if (!S.armed) {
+      S.armed = true;
+      say('Tekrar dokunursan ' + S.best.v + ' ile bitirirsin (' + S.best.d + ' fark).');
+      render(); return;
+    }
+    if (S.start == null) S.start = Date.now();
+    finish();
+    save(); render();
+  }
+  function onReveal() {
+    if (S.done) return;
+    S.armed = false;
+    if (!S.armedReveal) {
+      S.armedReveal = true;
+      say('Cevaba bakarsan bugünkü oyun biter ve yıldız alamazsın. Emin misin?');
+      render(); return;
+    }
+    if (S.start == null) S.start = Date.now();
+    finish(true);
+    save(); render();
+  }
+  function finish(gaveUp) {
+    S.done = true; S.end = Date.now();
+    S.sel = null; S.op = null; S.armed = false; S.armedReveal = false;
+    S.gaveUp = !!gaveUp;
+    S.stars = gaveUp ? 0 : starsFor(S.best.d);
+    if (S.best.d === 0) celebrate = true;
+    const st = store.get('kisaca:stats') || { played: 0, exact: 0, streak: 0, max: 0, last: null };
+    if (st.last !== S.date) {
+      st.played += 1;
+      if (S.stars === 3) st.exact += 1;
+      st.streak = st.last === istDate(-1) ? st.streak + 1 : 1;
+      st.max = Math.max(st.max, st.streak);
+      st.last = S.date;
+      store.set('kisaca:stats', st);
+    }
+  }
+  function shareText() {
+    const stars = '★'.repeat(S.stars) + '☆'.repeat(3 - S.stars);
+    const res = S.best.d === 0 ? 'tam isabet' : S.best.d + ' fark';
+    const line = S.gaveUp ? 'Hedef ' + S.target + ' · cevaba baktım ' + stars
+      : 'Hedef ' + S.target + ' → ' + S.best.v + ' ' + stars + ' (' + res + ')';
+    return 'Kısaca · Günün İşlemi #' + S.no + '\n' + line + '\n' +
+      S.steps.length + ' hamle · ' + fmtTime(S.end - S.start);
+  }
+  function onShare() {
+    const btn = $('#btn-share');
+    const text = shareText();
+    const fallback = function () {
+      const ta = $('#share-fallback');
+      ta.hidden = false; ta.value = text; ta.focus(); ta.select();
+      btn.textContent = 'Metin seçili, kopyalayabilirsin';
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { btn.textContent = 'Kopyalandı ✓'; }, fallback);
+      } else fallback();
+    } catch (e) { fallback(); }
+  }
+
+  function render() {
+    $('#g-no').textContent = '#' + S.no;
+    $('#teaser-no').textContent = '#' + S.no;
+    $('#teaser-target').textContent = S.target;
+    $('#teaser-go').textContent = S.done ? (S.stars === 3 ? 'Çözdün ✓' : 'Bitti ✓') : 'Oyna ↓';
+    $('#t-num').textContent = S.target;
+    $('#t-best').textContent = S.best.v;
+    $('#t-diff').textContent = S.best.d === 0 ? 'tam isabet' : S.best.d + ' fark';
+
+    S.tiles.forEach(function (t, i) {
+      const b = document.getElementById('tile-' + i);
+      b.className = 'tile';
+      if (t.used) {
+        b.classList.add('used'); b.textContent = ''; b.disabled = true;
+        b.setAttribute('aria-label', 'Kullanıldı');
+        b.removeAttribute('aria-pressed');
+      } else {
+        b.disabled = S.done;
+        b.textContent = t.v;
+        b.setAttribute('aria-label', String(t.v));
+        b.setAttribute('aria-pressed', S.sel === i ? 'true' : 'false');
+        if (String(t.v).length > 4) b.classList.add('long');
+        if (S.sel === i) b.classList.add('sel');
+        if (!reduceMotion && popId === i) { void b.offsetWidth; b.classList.add('pop'); }
+        if (!reduceMotion && shakeId === i) { void b.offsetWidth; b.classList.add('shake'); }
+        if (!reduceMotion && celebrate) { b.classList.add('win'); b.style.animationDelay = (i * 70) + 'ms'; }
+        else b.style.animationDelay = '';
+      }
+    });
+    if (celebrate && !reduceMotion) { const tn = $('#t-num'); tn.classList.remove('flash'); void tn.offsetWidth; tn.classList.add('flash'); }
+    popId = -1; shakeId = -1; celebrate = false;
+
+    document.querySelectorAll('.op').forEach(function (b) {
+      b.classList.toggle('sel', S.op === b.dataset.op);
+      b.setAttribute('aria-pressed', S.op === b.dataset.op ? 'true' : 'false');
+    });
+    const msg = $('#msg');
+    msg.textContent = S.msg; msg.classList.toggle('err', msgErr);
+    $('#btn-undo').disabled = !S.hist.length;
+    $('#btn-reset').disabled = !S.steps.length;
+    const end = $('#btn-end');
+    end.classList.toggle('armed', S.armed);
+    end.textContent = S.armed ? S.best.v + ' ile bitir' : 'Bitir';
+    const rv = $('#btn-reveal');
+    rv.classList.toggle('armed', !!S.armedReveal);
+    rv.textContent = S.armedReveal ? 'Evet, cevabı göster' : 'Bulamadın mı? Cevabı göster';
+
+    $('#play-controls').hidden = S.done;
+    const res = $('#result');
+    res.hidden = !S.done;
+    if (S.done) {
+      const stars = $('#r-stars');
+      stars.innerHTML = '';
+      for (let i = 0; i < 3; i++) stars.appendChild(el('span', i < S.stars ? '' : 'off', '★'));
+      $('#r-head').textContent = S.gaveUp ? 'Cevap: ' + S.target + ' böyle bulunuyor'
+        : S.best.d === 0 ? 'Tam isabet!' : S.best.v + ' ile ' + S.best.d + ' farkla bitirdin';
+      $('#r-line').textContent = S.gaveUp ? 'Yarın yeni bir işlemle tekrar dene.' : S.steps.length + ' hamle · ' + fmtTime(S.end - S.start);
+      const exact = S.best.d === 0 && !S.gaveUp;
+      $('#solution-sum').textContent = exact ? 'Başka bir çözüm' : 'Cevap';
+      if (!exact) $('#solution-box').open = true;
+      const sol = $('#solution');
+      sol.innerHTML = '';
+      P.steps.forEach(function (x) { sol.appendChild(el('li', null, x)); });
+    }
+
+    const st = store.get('kisaca:stats') || { played: 0, exact: 0, streak: 0, max: 0, last: null };
+    const alive = st.last === istDate() || st.last === istDate(-1);
+    $('#s-played').textContent = st.played;
+    $('#s-exact').textContent = st.exact;
+    $('#s-streak').textContent = alive ? st.streak : 0;
+    $('#s-max').textContent = st.max;
+    tick();
+  }
+
+  function tick() {
+    if (!S) return;
+    const now = Date.now();
+    $('#g-time').textContent = fmtTime(S.start == null ? 0 : (S.done ? S.end : now) - S.start);
+    if (S.done) {
+      const left = DAY - ((now + TZ) % DAY);
+      const h = Math.floor(left / 3600e3), m = Math.floor(left / 60e3) % 60, s = Math.floor(left / 1000) % 60;
+      $('#next').textContent = 'Yeni işlem ' + h + ' sa ' + String(m).padStart(2, '0') + ' dk ' + String(s).padStart(2, '0') + ' sn sonra.';
+    }
+    if (istDate() !== S.date && (S.done || S.start == null)) { S = freshState(istDate()); save(); render(); }
+  }
+
+  function start(data) {
+    const today = istDate();
+    let saved = data && data.date === today && data.tiles ? data : store.get('kisaca:islem:' + today);
+    P = genPuzzle(today);
+    if (saved && saved.date === today && saved.target === P.target && Array.isArray(saved.tiles) && saved.tiles.length === 6) {
+      S = saved;
+      S.armed = false; S.armedReveal = false;
+      if (!S.msg) S.msg = 'Bir sayı seç, sonra bir işlem, sonra ikinci sayı.';
+    } else {
+      S = freshState(today);
+    }
+    if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(function () { return S; });
+
+    for (let i = 0; i < 6; i++) {
+      (function (idx) { document.getElementById('tile-' + idx).addEventListener('click', function () { onTile(idx); }); })(i);
+    }
+    document.querySelectorAll('.op').forEach(function (b) { b.addEventListener('click', function () { onOp(b.dataset.op); }); });
+    $('#btn-undo').addEventListener('click', onUndo);
+    $('#btn-reset').addEventListener('click', onReset);
+    $('#btn-end').addEventListener('click', onEnd);
+    $('#btn-reveal').addEventListener('click', onReveal);
+    $('#btn-share').addEventListener('click', onShare);
+    $('#teaser').addEventListener('click', function () {
+      document.getElementById('oyun').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+    render();
+    setInterval(tick, 1000);
+  }
+
+  if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start);
+  else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
+})();
+</script>
+</body>
+</html>
