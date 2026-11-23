@@ -36,33 +36,22 @@
   function renderNews() {
     if (!DATA) return;
     var s0 = DATA.stories[0];
-    $('#lnav-date').textContent = DATA.dateLabel.replace(/ \d{4},/, ',');
-    $('#lnav-ed').textContent = DATA.edition + ' · ' + DATA.readMin + ' dakikalık okuma';
-    $('#hero-date').textContent = DATA.dateLabel;
+    $('#hero-date').textContent = DATA.dateLabel + ' · Manşet';
     $('#lead-h').textContent = s0.title;
     $('#lead-p').textContent = firstSentence(s0.summary);
     var ls = $('#lead-src'); ls.href = s0.sources[0].url;
-    ls.innerHTML = ''; ls.appendChild(document.createTextNode(s0.sources[0].name + ' kaynağına git')); ls.insertAdjacentHTML('beforeend', CHEV);
+    ls.innerHTML = ''; ls.appendChild(document.createTextNode('Kaynak: ' + s0.sources[0].name));
     $('#asof').textContent = DATA.asOf;
 
     var q = $('#quick'); q.innerHTML = '';
-    var labels = ['Bir', 'İki', 'Üç'];
-    DATA.quick.forEach(function (line, i) {
-      var li = el('div'); li.setAttribute('role', 'listitem');
-      li.className = ''; li.style.listStyle = 'none';
-      li.appendChild(el('b', null, labels[i] || String(i + 1)));
-      li.appendChild(el('span', null, line));
-      var wrapLi = el('li'); wrapLi.appendChild(li.firstChild); wrapLi.appendChild(li.firstChild);
-      wrapLi.setAttribute('role', 'listitem');
-      q.appendChild(wrapLi);
-    });
+    DATA.quick.forEach(function (line) { q.appendChild(el('li', null, line)); });
 
     var f = $('#feature'), l = $('#list');
     f.innerHTML = ''; l.innerHTML = '';
     DATA.stories.forEach(function (s, i) {
       if (i === 0) return;
       if (i < 3) {
-        var a = el('article');
+        var a = el('article'); a.setAttribute('data-k', s.title);
         a.appendChild(el('p', 'cat', cats(s)));
         a.appendChild(el('h3', null, s.title));
         a.appendChild(el('p', null, s.summary));
@@ -71,7 +60,7 @@
         f.appendChild(a);
         return;
       }
-      var li = el('li');
+      var li = el('li'); li.setAttribute('data-k', s.title);
       li.appendChild(el('p', 'cat', cats(s)));
       var d = el('div');
       d.appendChild(el('h3', null, s.title));
@@ -82,7 +71,7 @@
       l.appendChild(li);
     });
     /* the lead story's full text joins the list's top so nothing is lost */
-    var li0 = el('li');
+    var li0 = el('li'); li0.setAttribute('data-k', s0.title);
     li0.appendChild(el('p', 'cat', cats(s0) + ' · Manşet'));
     var d0 = el('div');
     d0.appendChild(el('h3', null, s0.title));
@@ -110,12 +99,31 @@
     });
   }
   renderNews();
+  watchReading();
+
+  /* how far you have read: a story counts once most of it has been on screen */
+  function watchReading() {
+    var total = DATA ? DATA.stories.length : 8, seen = {};
+    var fill = $('#read-fill'), txt = $('#read-txt');
+    function upd() { var n = Object.keys(seen).length; txt.textContent = n + '/' + total + ' okundu'; fill.style.width = (100 * n / total) + '%'; }
+    upd();
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var k = e.target.getAttribute('data-k');
+        if (k && !seen[k]) { seen[k] = 1; e.target.classList.add('read'); upd(); }
+      });
+    }, { threshold: 0.6 });
+    document.querySelectorAll('[data-k]').forEach(function (n) { io.observe(n); });
+    watchReading.io = io;
+  }
 
   try {
     fetch(SB_URL + '/rest/v1/editions?select=edition_date,data&published=eq.true&order=edition_date.desc&limit=1', {
       headers: { apikey: SB_KEY, Accept: 'application/json' }
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
-      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; renderNews(); }
+      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; renderNews(); if (watchReading.io) { watchReading.io.disconnect(); } watchReading(); }
     }).catch(function () {});
   } catch (e) { /* çevrimdışı: yedek baskı */ }
 
