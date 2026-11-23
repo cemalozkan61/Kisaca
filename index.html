@@ -172,6 +172,21 @@ p { margin: 0; }
 .trend li::before { content: counter(t); color: var(--teal); font-weight: 700; }
 @media (max-width: 860px) { .three { grid-template-columns: minmax(0, 1fr); } .panel { padding: 24px; } .briefs li { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
 
+/* categories: more news, grouped */
+.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
+.cats .panel { scroll-margin-top: 84px; }
+.cats .panel h3 { display: flex; align-items: baseline; gap: 10px; color: var(--teal); font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 2px solid var(--teal); margin-bottom: 0; }
+.cats .panel h3 small { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; font-size: 13px; }
+.cats ul { margin: 0; padding: 0; }
+.cats li { list-style: none; padding: 14px 0; border-top: 1px solid var(--rule); }
+.cats li:first-child { border-top: 0; }
+.cats li h4 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; margin: 0 0 4px; color: var(--ink); }
+.cats li p { font-size: 15px; color: var(--ink-2); margin: 0; }
+.cats li a { font-size: 13px; color: var(--muted); }
+.cat-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 20px; }
+.cat-nav a { font-size: 14px; font-weight: 600; color: var(--ink); text-decoration: none; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r-sm); padding: 7px 12px; }
+.cat-nav a:hover, .cat-nav a:focus-visible { border-color: var(--teal); color: var(--teal); }
+
 .foot { border-top: 1px solid var(--rule); color: var(--muted); font-size: 13px; padding: 24px 0 40px; }
 .foot .wrap { display: grid; gap: 6px; }
 @media (max-width: 640px) { .sec { padding: 56px 0; } .hero { padding: 36px 0 48px; } }
@@ -187,6 +202,7 @@ p { margin: 0; }
       <a href="#haberler">Haberler</a>
       <a href="#oyun">Günün İşlemi</a>
       <a href="#kisa">Kısa kısa</a>
+      <a href="#kategoriler">Kategoriler</a>
     </nav>
     <span class="spacer"></span>
     <span class="progress" aria-live="polite"><span class="track" aria-hidden="true"><span class="fill" id="read-fill"></span></span><span id="read-txt">0/8 okundu</span></span>
@@ -292,6 +308,16 @@ p { margin: 0; }
       </div>
     </div>
   </section>
+  <section class="sec" id="kategoriler" aria-labelledby="kat-h" hidden>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="kat-h">Kategorilere göre</h2>
+        <p>Kısa özetin dışında kalan diğer haberler, konularına göre.</p>
+      </div>
+      <nav class="cat-nav" id="cat-nav" aria-label="Kategoriler"></nav>
+      <div class="cats" id="cats"></div>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
@@ -301,112 +327,7 @@ p { margin: 0; }
   </div>
 </footer>
 
-<script id="kisaca-data" type="application/json">{
-  "date": "2026-11-17",
-  "dateLabel": "17 Kasım 2026, Salı",
-  "edition": "Akşam baskısı",
-  "readMin": 4,
-  "asOf": "Haberler 17 Kasım 2026 akşamı itibarıyla derlendi.",
-  "quick": [
-    "Hürmüz'de gerilim tırmanıyor; ABD'nin üçüncü uçak gemisi bölgeye ulaştı.",
-    "Fon soruşturmasında 7 şüpheli daha tutuklandı.",
-    "A Milli Takım, Uluslar Ligi'nde B Ligi'ne düştü."
-  ],
-  "stories": [
-    {
-      "tags": ["Manşet", "Dünya"],
-      "title": "Hürmüz'de gerilim büyüyor: ABD'nin üçüncü uçak gemisi bölgede",
-      "summary": "USS Theodore Roosevelt Orta Doğu'ya ulaştı ve bölgedeki ABD uçak gemisi sayısı üçe çıktı. ABD güçleri Hürmüz Boğazı'ndaki Keşm Adası'nı yeniden vurdu. Çatışmaları bitirip boğazı yeniden açmaya yönelik görüşmeler tıkanmış durumda; ABD Başkan Yardımcısı JD Vance ise savaşın uzun soluklu olmayacağını söylüyor.",
-      "why": "Hürmüz, dünya petrol ticaretinin en kritik geçidi. Buradaki tıkanıklık akaryakıt fiyatları üzerinden Türkiye'yi de doğrudan etkiliyor.",
-      "sources": [
-        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"},
-        {"name": "New Straits Times", "url": "https://nst.com.my/amp/news/regional/2026/11/1580014/todays-news-pictures-tuesday-november-17-2026"}
-      ]
-    },
-    {
-      "tags": ["Türkiye", "Ekonomi"],
-      "title": "Fon soruşturmasında 7 tutuklama daha",
-      "summary": "İstanbul'da yürütülen fon ve hisse manipülasyonu soruşturmasında 7 şüpheli daha tutuklandı, bazı şüphelilerin mal varlıklarına el konuldu. Adalet Bakanı Akın Gürlek soruşturmanın derinleştiğini açıkladı. Bakanlığın 9 Kasım tarihli tablosuna göre dosyada 464 şüpheli vardı, bunların 120'si tutukluydu.",
-      "why": "Soruşturma, küçük yatırımcıların birikimlerini ve sermaye piyasasına güveni doğrudan ilgilendiriyor.",
-      "sources": [
-        {"name": "TRT Haber", "url": "https://www.trthaber.com/son-dakika-haberleri"},
-        {"name": "Habertürk", "url": "https://www.haberturk.com/son-dakika-haberleri"},
-        {"name": "Bloomberg HT", "url": "https://www.bloomberght.com/gurlek-fon-sorusturmasinda-464-supheli-120-tutuklu-3793928"}
-      ]
-    },
-    {
-      "tags": ["Türkiye", "Enerji"],
-      "title": "Irak petrolü yeniden Türkiye hattından akıyor",
-      "summary": "Irak Petrol Bakanı, iki ülke arasındaki eski boru hattı üzerinden ham petrol sevkiyatının yeniden başladığını duyurdu. Hürmüz'deki aksama nedeniyle Irak, petrolünü bir süredir Suriye'deki Baniyas Limanı gibi alternatif rotalardan da taşıyor.",
-      "why": "Körfez rotası tıkandıkça Türkiye üzerinden Akdeniz'e uzanan hatların önemi artıyor.",
-      "sources": [
-        {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"},
-        {"name": "Gazete Oksijen", "url": "https://gazeteoksijen.com/dunya/rota-turkiye-yunanistan-ve-italya-irakta-colde-10-bin-tirlik-dev-petrol-operasyonu-296005"}
-      ]
-    },
-    {
-      "tags": ["Spor"],
-      "title": "Milliler, Uluslar Ligi'nde B Ligi'ne düştü",
-      "summary": "A Milli Takım, A Ligi 1. Grup'u 6 maçta 6 yenilgi ve −11 averajla son sırada tamamladı; son maçta Fransa'ya 2-1 kaybetti. Play-off umudu Sırbistan'ın Yunanistan'a en az 5 farkla yenilmesine bağlıydı. Bu gerçekleşmeyince Türkiye doğrudan B Ligi'ne düştü.",
-      "sources": [
-        {"name": "Yeni Çağ", "url": "https://www.yenicaggazetesi.com/turkiyenin-uluslar-ligindeki-kaderi-yunanistan-sirbistan-macina-bagli-1091264h.htm"},
-        {"name": "Yeni Şafak", "url": "https://www.yenisafak.com/"}
-      ]
-    },
-    {
-      "tags": ["Dünya"],
-      "title": "Trump Asya turunda: Manila'dan sonra Xi ve Putin'le üçlü zirve",
-      "summary": "Trump, Japonya, Avustralya ve Hindistan'la iki yıl aradan sonraki ilk Quad liderler toplantısı ve ABD-ASEAN zirvesi için Manila'da. Ardından APEC için Çin'in Shenzhen kentine geçecek; Xi Jinping ve Vladimir Putin'le nükleer silahlar, İran ve Ukrayna'yı görüşecek.",
-      "sources": [
-        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}
-      ]
-    },
-    {
-      "tags": ["Dünya", "Ukrayna"],
-      "title": "Köprüler hedefte: Ukrayna Kerç'i, Rusya Kiev'i vurdu",
-      "summary": "Ukrayna gece düzenlediği İHA saldırısında Rusya'yı Kırım'a bağlayan Kerç Köprüsü'nü vurdu; trafik geçici olarak kısıtlandı, yaklaşık 2 bin araç yolda kaldı. Kiev'deki Rus saldırılarında en az 7 kişi hayatını kaybetti, 50 bin kişi elektriksiz kaldı. Kentin belediye başkanı iki büyük köprünün de vurulduğunu söyledi.",
-      "sources": [
-        {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"},
-        {"name": "Daily Digest", "url": "https://dailydigest.com/archive/2026/11/17/"}
-      ]
-    },
-    {
-      "tags": ["Türkiye", "İklim"],
-      "title": "COP31 Antalya'da son haftasında",
-      "summary": "Türkiye'nin ev sahipliğindeki BM İklim Değişikliği Konferansı 9 Kasım'da başladı, 20 Kasım'da sona erecek. Ortak başkanlık modelinde müzakereleri Avustralya yürütüyor. Bakan Kacır, zirvede yapay zekâ destekli bir temiz teknoloji girişimi başlatılacağını açıkladı.",
-      "sources": [
-        {"name": "Heinrich Böll Stiftung", "url": "https://www.boell.de/en/cop-climate-change-conference"},
-        {"name": "TRT Haber", "url": "https://www.trthaber.com/son-dakika-haberleri"}
-      ]
-    },
-    {
-      "tags": ["Piyasalar"],
-      "title": "Euro/dolar 19 ayın dibinde, altın güne yükselişle başladı",
-      "summary": "Euro/dolar paritesi 1,0982'ye inerek son 19 ayın en düşük seviyesini gördü. Gram altın ise sabah saatlerinde yükselişle 6.274 TL civarından işlem gördü.",
-      "note": "Fiyatlar gün içinde değişir; rakamlar haberin verildiği saate aittir.",
-      "sources": [
-        {"name": "Bloomberg HT", "url": "https://www.bloomberght.com/sondakika"},
-        {"name": "Habertürk", "url": "https://www.haberturk.com/bilgi/foto/altin-fiyatlarinda-yeni-gun-yukselisle-basladi-17-kasim-2026-gram-ve-ceyrek-altin-ne-kadar-kac-tl-oldu-3927834"}
-      ]
-    }
-  ],
-  "figureAfter": 4,
-  "figure": {
-    "value": "2.049",
-    "caption": "Rusya'nın son 24 saatte düşürdüğünü açıkladığı Ukrayna İHA'sı.",
-    "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}
-  },
-  "briefs": [
-    {"tag": "Deprem", "text": "AFAD, Van Gölü'nde 4,3 büyüklüğünde bir deprem kaydedildiğini açıkladı.", "source": {"name": "CNN Türk", "url": "https://www.cnnturk.com/turkiye/son-dakika-deprem-17-kasim-bugun-deprem-mi-oldu-nerede-kac-siddetinde-17-kasim-2026-afad-ve-kandilli-rasathanesi-son-depremler-listesi-3494212"}},
-    {"tag": "Hava", "text": "İstanbul için fırtına uyarısı yapıldı. Güncel uyarıları Meteoroloji'den takip edin.", "source": {"name": "Habertürk", "url": "https://www.haberturk.com/son-dakika-haberleri"}},
-    {"tag": "NBA", "text": "Alperen Şengün 23 sayı attı ama Houston Rockets deplasmanda Miami Heat'e 128-110 yenildi.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/11775/17-kasim-2026-sali-gununun-son-dakika-onemli-gelismeleri-cnn-turk-11-30-bulteni"}},
-    {"tag": "Teknoloji", "text": "Anthropic'in Nasdaq halka arzında fiyatlamanın 18 Kasım'da yapılması bekleniyor; aralık hisse başına 70-78 dolar.", "source": {"name": "Renaissance Capital", "url": "https://www.renaissancecapital.com/IPO-Center/News/122657/anthropic-sets-terms-for-61-billion-ipo-targeting-a-1.2-trillion-market-cap"}},
-    {"tag": "Diplomasi", "text": "Çin ve Kanada, gümrük vergisi indirimlerini genişletmek için anlaştı.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-60"}},
-    {"tag": "Asya", "text": "Moğolistan Cumhurbaşkanı Ukhnaagiin Khürelsükh istifa edeceğini açıkladı.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-60"}},
-    {"tag": "Avrupa", "text": "AB, Rusya'nın en zengin kadını ve Wildberries'in kurucusu Tatyana Kim'e yaptırım uyguladı.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}},
-    {"tag": "BM", "text": "128 ülke, hedefini insan müdahalesi olmadan seçen otonom silahlara bağlayıcı sınırlar için Cenevre'de bir araya geldi.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}}
-  ]
-}</script>
+<script id="kisaca-data" type="application/json">{"date": "2026-11-23", "dateLabel": "23 Kasım 2026, Pazartesi", "edition": "Akşam baskısı", "readMin": 5, "asOf": "Haberler 23 Kasım 2026 akşamı itibarıyla derlendi.", "quick": ["COP31 iklim zirvesi Antalya'da anlaşma çıkmadan sona erdi.", "Hürmüz Boğazı'nda hafta sonu üç gemi daha vuruldu.", "Fon soruşturmasında şüpheli sayısı 632'ye yükseldi."], "stories": [{"tags": ["Manşet", "Dünya", "İklim"], "title": "COP31 Antalya'da anlaşmasız bitti", "summary": "Antalya'daki BM İklim Değişikliği Konferansı, iki günlük uzatmaya rağmen ortak metin çıkmadan pazar günü dağıldı. Masadaki son taslak kömür, petrol ve doğalgazdan hiç söz etmiyordu. Zirve aslında 20 Kasım'da bitecekti.", "why": "Türkiye'nin ev sahipliğindeki zirveden fosil yakıtlardan çıkışa dair yeni bir taahhüt çıkmadı.", "sources": [{"name": "Democracy Now", "url": "https://www.democracynow.org/2026/11/23/headlines"}, {"name": "Wikipedia", "url": "https://en.wikipedia.org/wiki/2026_United_Nations_Climate_Change_Conference"}]}, {"tags": ["Türkiye", "Ekonomi"], "title": "Fon soruşturmasında şüpheli sayısı 632'ye çıktı", "summary": "Eylülde başlayan ve sermaye piyasalarını sarsan soruşturmada 91 şirkete kayyum atandı. Gönüllü iade kapsamında 85 kişiden toplam 44,58 milyar TL tahsil edildi. Cumhurbaşkanı Erdoğan atılan adımları yakından takip ettiklerini söyledi.", "sources": [{"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}, {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}]}, {"tags": ["Dünya", "Orta Doğu"], "title": "Hürmüz'de saldırılar rekor hızda", "summary": "Hafta sonu Hürmüz Boğazı'nı geçmeye çalışan en az üç gemi daha füzeyle vuruldu. CNN'e göre gemilere yönelik saldırıların hızı, ABD'nin şubatta İran'a saldırmasından bu yana en yüksek seviyede. Trump, anlaşma olmazsa yılbaşından sonra İran'a saldırıları yeniden başlatmaya meyilli olduğunu söyledi.", "why": "Boğazdaki her aksama petrol fiyatları üzerinden Türkiye'yi de etkiliyor.", "sources": [{"name": "Democracy Now", "url": "https://www.democracynow.org/2026/11/23/headlines"}, {"name": "Anadolu Ajansı", "url": "https://aa.com.tr/en/world/morning-briefing-nov-23-2026/4133974"}]}, {"tags": ["Dünya", "Ukrayna"], "title": "Rus gemileri yabancı sularda vuruldu", "summary": "Hafta sonu Ukrayna'ya ait olduğu düşünülen İHA'lar Baltık Denizi'nde bir Rus kargo gemisini, Libya'nın Bingazi limanında ise bir Rus savaş gemisini vurdu. Doğu Libya hükümeti BM'ye resmi şikâyette bulundu. Finlandiya Başbakanı Orpo savaşın yakın çevrelerine taştığını söyledi.", "sources": [{"name": "Just Security", "url": "https://www.justsecurity.org/165610/early-edition-november-23-2026/"}, {"name": "Anadolu Ajansı", "url": "https://aa.com.tr/en/world/morning-briefing-nov-23-2026/4133974"}]}, {"tags": ["Dünya", "ABD"], "title": "Demokratlar 1992'den bu yana en büyük Temsilciler Meclisi çoğunluğunda", "summary": "Kuzey Karolina'daki son yarışı da kazanan Demokratlar Temsilciler Meclisi'nde 258 sandalyeye ulaştı. Parti Senato'da da 56 sandalyeye sahip. Bu tablo Trump'ın son iki yılında politikalarını ve atamalarını engelleme imkânı veriyor.", "sources": [{"name": "Anadolu Ajansı", "url": "https://aa.com.tr/en/world/morning-briefing-nov-23-2026/4133974"}, {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}]}, {"tags": ["Türkiye"], "title": "Sarıyer'de kaçan aslan aranıyor", "summary": "İstanbul Sarıyer'in Uskumruköy Mahallesi'nde güvenlik kameralarına yansıyan dişi aslan paniğe yol açtı. Jandarma, emniyet, Doğa Koruma ve belediye ekipleri bölgede; Valilik hayvanın yerinin tespit edildiğini ve canlı yakalanmaya çalışıldığını açıkladı. Başsavcılık re'sen soruşturma başlattı.", "sources": [{"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}, {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"}]}, {"tags": ["Piyasalar"], "title": "Borsa günü hafif düşüşle kapattı", "summary": "BIST 100 endeksi günü yüzde 0,24 kayıpla 11.104,38 puandan tamamladı. Günün veri takviminde TCMB'nin kasım hanehalkı beklenti anketi ile TÜİK'in üçüncü çeyrek iş gücü girdi endeksleri vardı.", "note": "Fiyatlar gün içinde değişir; rakamlar haberin verildiği saate aittir.", "sources": [{"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}, {"name": "Ekonomi Dünya", "url": "https://www.ekonomidunya.com/gundem-ozeti-23-kasim-2026/115375"}]}, {"tags": ["Spor"], "title": "Galatasaray yarın Aston Villa'yı ağırlıyor", "summary": "Şampiyonlar Ligi'nin 5. haftasında Galatasaray, 24 Kasım Salı saat 20.45'te RAMS Park'ta Aston Villa ile karşılaşacak. Sarı-kırmızılılar dört maçta 6, İngiliz ekibi 9 puan topladı. Maç TRT 1'den yayımlanacak.", "sources": [{"name": "Milli Gazete", "url": "https://www.milligazete.com.tr/galatasarayin-sampiyonlar-ligi-maci-hangi-gun-aston-villa-karsilasmasi-saat-kacta-baslayacak"}, {"name": "Timeturk", "url": "https://www.timeturk.com/bu-hafta-sampiyonlar-ligi-var-mi-galatasaray-ve-fenerbahce-maclari-ne-zaman"}]}], "figureAfter": 4, "figure": {"value": "632", "caption": "Eylülden bu yana fon soruşturmasındaki şüpheli sayısı.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}, "briefs": [{"tag": "Avrupa", "text": "Fransa'da altı haftadır süren gençlik protestoları, yaklaşan seçim öncesinde gündemin merkezine oturdu.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}, {"tag": "Kafkasya", "text": "Ermenistan hükümeti yeni anayasa taslağından Karabağ ve Ağrı Dağı'na yapılan atıfları çıkardı.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}, {"tag": "NATO", "text": "NATO Genel Sekreteri, ittifak ülkelerine yönelik kötü niyetli faaliyetlerin yoğunlaştığı uyarısında bulundu.", "source": {"name": "Anadolu Ajansı", "url": "https://aa.com.tr/en/world/morning-briefing-nov-23-2026/4133974"}}, {"tag": "Yemen", "text": "Hudeyde'de telekomünikasyon tesisini ve bir konutu hedef alan saldırıda 6 kişi öldü, 18 kişi yaralandı.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-65"}}, {"tag": "Ankara", "text": "Kızılcahamam'da bir anne ayı ve yavrusu vuruldu; iki yavru ormanlık alanda kayıp.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}}, {"tag": "Asayiş", "text": "Adana merkezli 13 ilde düzenlenen operasyonda 105 şüpheli gözaltına alındı, 90'ı tutuklandı.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}}], "categories": [{"name": "Türkiye", "items": [{"title": "PKK 14 barınma alanını daha boşalttı", "text": "Terör örgütü PKK'nın Irak'ın kuzeyindeki 14 barınma alanını daha boşalttığı bildirildi.", "source": {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"}}, {"title": "DEM Parti çerçeve yasa için MGK'yı bekliyor", "text": "Eş Genel Başkan Hatimoğulları, çerçeve yasanın MGK'nın kasım toplantısında ele alınmasını beklediklerini söyledi.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}, {"title": "Emekliler için kontrol muayenesi uyarısı", "text": "Engellilik ya da malullük nedeniyle emekli olanlar SGK'nın kontrol muayenesi çağrısına geçerli bir mazeret olmadan uymazsa aylıkları kesilebiliyor.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}, {"title": "Pendik'te 40 gün gece şerit kapatması", "text": "Tersane Köprüsü'nde sahil yönündeki iki şerit, inşaat nedeniyle 40 gün boyunca geceleri kapalı olacak.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}}]}, {"name": "Dünya", "items": [{"title": "Eisenkot'tan yerleşimci saldırılarına sert tepki", "text": "İsrail'in seçilmiş başbakanı Gadi Eisenkot, Batı Şeria'da Filistin köylerine yönelik kundaklamaları \"Yahudi terörü\" olarak nitelendirdi.", "source": {"name": "Just Security", "url": "https://www.justsecurity.org/165610/early-edition-november-23-2026/"}}, {"title": "Zanzibar'da altı otel yandı", "text": "Tanzanya'ya bağlı Zanzibar'da bir plajdaki altı oteli saran yangının nedeni araştırılıyor; yaklaşık 180 turist güvenle tahliye edildi.", "source": {"name": "Morning Star", "url": "https://morningstaronline.co.uk/article/world-brief-65"}}, {"title": "İspanya'da anketler sağı önde gösteriyor", "text": "Anketlere göre İspanya'da sağ partiler, Sosyalistlerin kazanımlarına rağmen çoğunluğa yaklaşıyor.", "source": {"name": "US News / Reuters", "url": "https://www.usnews.com/news/world"}}, {"title": "Macaristan Başbakanı Ukrayna'ya gidecek", "text": "Macaristan Başbakanı Péter Magyar yakında Ukrayna'yı ziyaret edeceğini söyledi.", "source": {"name": "US News / Reuters", "url": "https://www.usnews.com/news/world"}}]}, {"name": "Ekonomi", "items": [{"title": "Otomobil pazarı ilk on ayda daraldı", "text": "Türkiye otomobil pazarı yılın ilk on ayında önceki yılın gerisinde kaldı; ekim ayında da satışlar düştü.", "source": {"name": "CNN Türk bülteni", "url": "https://habersitesi.org/haber/17549/23-kasim-2026-pazartesi-gununun-son-dakika-onemli-gelismeleri-cnn-turk-16-30-bulteni"}}, {"title": "TCMB beklenti verileri", "text": "Merkez Bankası'nın bugünkü veri takviminde kasım ayı hanehalkı beklenti anketi, sektörel enflasyon beklentileri ve finansal hizmetler güven endeksi vardı.", "source": {"name": "Ekonomi Dünya", "url": "https://www.ekonomidunya.com/gundem-ozeti-23-kasim-2026/115375"}}, {"title": "Fon soruşturmasında iadeler 44,58 milyar TL", "text": "Gönüllü iade kapsamında 85 kişiden tahsil edilen tutar 44,58 milyar TL'ye ulaştı.", "source": {"name": "Elips Haber", "url": "https://www.elipshaber.com/10-mansette-bugun-23-kasim-2026"}}]}, {"name": "Spor", "items": [{"title": "Fenerbahçe Çarşamba Shakhtar deplasmanında", "text": "Şampiyonlar Ligi 5. haftasında Fenerbahçe 25 Kasım'da Shakhtar Donetsk'e konuk olacak; maç TRT 1'de.", "source": {"name": "Timeturk", "url": "https://www.timeturk.com/bu-hafta-sampiyonlar-ligi-var-mi-galatasaray-ve-fenerbahce-maclari-ne-zaman"}}, {"title": "Süper Lig'de 12. hafta bugün tamamlanıyor", "text": "Haftanın son maçında Başakşehir, Çorum FK'yı ağırlıyor.", "source": {"name": "Memurlar.net", "url": "https://memurlar.net/haber/1184930/23-kasim-2026-dan-onemli-gundem-basliklari.html"}}, {"title": "Ampute Milli Takım dünya üçüncüsü", "text": "Ampute Futbol Milli Takımı, Meksika'daki Dünya Kupası'nı üçüncü sırada tamamladı.", "source": {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"}}, {"title": "Basketbol Milli Takımı için medya günü", "text": "A Milli Erkek Basketbol Takımı'nın bugünkü programında basın mensuplarıyla buluşacağı medya günü vardı.", "source": {"name": "Ekonomi Dünya", "url": "https://www.ekonomidunya.com/gundem-ozeti-23-kasim-2026/115375"}}]}, {"name": "Bilim ve Teknoloji", "items": [{"title": "Rusya'nın nükleer uydu planı uyarısı", "text": "Batılı istihbarat servisleri, Rusya'nın nükleer başlık taşıyan bir uyduyu önümüzdeki haftalarda yörüngeye gönderebileceği uyarısında bulundu.", "source": {"name": "Haber 7", "url": "https://www.haber7.com/sondakika"}}, {"title": "Quad9 Fransa'dan çekiliyor", "text": "Ücretsiz DNS hizmeti Quad9, 24 Kasım'dan itibaren Fransa'daki kullanıcılarına hizmet vermeyi bırakıyor.", "source": {"name": "Teknoblog", "url": "https://www.teknoblog.com/page/7/?tb_kind=guides"}}]}]}</script>
 <script>
 /* GAME-CORE-START */
 function xmur3(str) {

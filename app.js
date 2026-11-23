@@ -97,6 +97,29 @@
       li.appendChild(t);
       ul.appendChild(li);
     });
+    var cs = $('#cats'), cn = $('#cat-nav'), ks = $('#kategoriler');
+    cs.innerHTML = ''; cn.innerHTML = '';
+    var groups = (DATA.categories || []).filter(function (g) { return g.items && g.items.length; });
+    ks.hidden = !groups.length;
+    groups.forEach(function (g, gi) {
+      var id = 'kat-' + gi;
+      var nav = el('a', null, g.name); nav.href = '#' + id; cn.appendChild(nav);
+      var p = el('div', 'panel'); p.id = id;
+      var h = el('h3', null, g.name); h.appendChild(el('small', null, g.items.length + ' haber'));
+      p.appendChild(h);
+      var u = el('ul');
+      g.items.forEach(function (x) {
+        var li = el('li');
+        li.appendChild(el('h4', null, x.title));
+        var t = el('p');
+        t.appendChild(document.createTextNode(x.text + ' '));
+        if (x.source) t.appendChild(linkTo(x.source));
+        li.appendChild(t);
+        u.appendChild(li);
+      });
+      p.appendChild(u);
+      cs.appendChild(p);
+    });
   }
   renderNews();
   watchReading();
