@@ -25,43 +25,72 @@
     var m = String(t).match(/^.+?[.!?](\s|$)/);
     return m ? m[0].trim() : t;
   }
-  function card(s, i) {
-    var top = i < 2;
-    var c = el('article', 'card span-6');
-    c.appendChild(el('p', 't-label', String(i + 1).padStart(2, '0') + ' · ' + s.tags.filter(function (t) { return t !== 'Manşet'; }).join(', ')));
-    c.appendChild(el('h3', null, s.title));
-    c.appendChild(el('p', null, top ? s.summary : firstSentence(s.summary)));
-    if (top && s.why) c.appendChild(el('p', 'muted', s.why));
-    var src = el('p', 'src');
-    src.appendChild(document.createTextNode('Kaynak: '));
-    s.sources.forEach(function (x, j) { if (j) src.appendChild(document.createTextNode(', ')); src.appendChild(linkTo(x)); });
-    c.appendChild(src);
-    return c;
+  var CHEV = '<svg class="chev" viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1.5 6 6l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function cats(s) { return s.tags.filter(function (t) { return t !== 'Manşet'; }).join(' · '); }
+  function srcLine(list) {
+    var p = el('p', 'src');
+    p.appendChild(document.createTextNode('Kaynak: '));
+    list.forEach(function (x, j) { if (j) p.appendChild(document.createTextNode(', ')); p.appendChild(linkTo(x)); });
+    return p;
   }
   function renderNews() {
     if (!DATA) return;
-    var short = DATA.dateLabel.split(',')[0];
-    $('#pill-date').textContent = DATA.dateLabel;
-    $('#pill-ed').textContent = DATA.edition + ', ' + DATA.stories.length + ' haber';
-    $('#win-date').textContent = short;
+    var s0 = DATA.stories[0];
+    $('#lnav-date').textContent = DATA.dateLabel.replace(/ \d{4},/, ',');
+    $('#lnav-ed').textContent = DATA.edition + ' · ' + DATA.readMin + ' dakikalık okuma';
+    $('#hero-date').textContent = DATA.dateLabel;
+    $('#lead-h').textContent = s0.title;
+    $('#lead-p').textContent = firstSentence(s0.summary);
+    var ls = $('#lead-src'); ls.href = s0.sources[0].url;
+    ls.innerHTML = ''; ls.appendChild(document.createTextNode(s0.sources[0].name + ' kaynağına git')); ls.insertAdjacentHTML('beforeend', CHEV);
     $('#asof').textContent = DATA.asOf;
 
     var q = $('#quick'); q.innerHTML = '';
-    DATA.quick.forEach(function (line) { var li = el('li', null, line); li.setAttribute('data-step', ''); q.appendChild(li); });
-
-    var a = $('#stories-a'), b = $('#stories-b');
-    a.innerHTML = ''; b.innerHTML = '';
-    DATA.stories.forEach(function (s, i) {
-      if (i < 2) { a.appendChild(card(s, i)); return; }
-      var li = el('li');
-      li.appendChild(el('span', 'k', String(i + 1).padStart(2, '0') + ' · ' + s.tags[0]));
-      var t = el('span');
-      t.appendChild(el('b', null, s.title + '. '));
-      t.appendChild(document.createTextNode(firstSentence(s.summary) + ' '));
-      t.appendChild(linkTo(s.sources[0]));
-      li.appendChild(t);
-      b.appendChild(li);
+    var labels = ['Bir', 'İki', 'Üç'];
+    DATA.quick.forEach(function (line, i) {
+      var li = el('div'); li.setAttribute('role', 'listitem');
+      li.className = ''; li.style.listStyle = 'none';
+      li.appendChild(el('b', null, labels[i] || String(i + 1)));
+      li.appendChild(el('span', null, line));
+      var wrapLi = el('li'); wrapLi.appendChild(li.firstChild); wrapLi.appendChild(li.firstChild);
+      wrapLi.setAttribute('role', 'listitem');
+      q.appendChild(wrapLi);
     });
+
+    var f = $('#feature'), l = $('#list');
+    f.innerHTML = ''; l.innerHTML = '';
+    DATA.stories.forEach(function (s, i) {
+      if (i === 0) return;
+      if (i < 3) {
+        var a = el('article');
+        a.appendChild(el('p', 'cat', cats(s)));
+        a.appendChild(el('h3', null, s.title));
+        a.appendChild(el('p', null, s.summary));
+        if (s.why) a.appendChild(el('p', 'why', s.why));
+        a.appendChild(srcLine(s.sources));
+        f.appendChild(a);
+        return;
+      }
+      var li = el('li');
+      li.appendChild(el('p', 'cat', cats(s)));
+      var d = el('div');
+      d.appendChild(el('h3', null, s.title));
+      d.appendChild(el('p', null, s.summary));
+      if (s.note) d.appendChild(el('p', 'src', s.note));
+      d.appendChild(srcLine(s.sources));
+      li.appendChild(d);
+      l.appendChild(li);
+    });
+    /* the lead story's full text joins the list's top so nothing is lost */
+    var li0 = el('li');
+    li0.appendChild(el('p', 'cat', cats(s0) + ' · Manşet'));
+    var d0 = el('div');
+    d0.appendChild(el('h3', null, s0.title));
+    d0.appendChild(el('p', null, s0.summary));
+    if (s0.why) d0.appendChild(el('p', 'src', s0.why));
+    d0.appendChild(srcLine(s0.sources));
+    li0.appendChild(d0);
+    l.insertBefore(li0, l.firstChild);
 
     if (DATA.figure) {
       $('#fig-v').textContent = DATA.figure.value;
@@ -72,7 +101,7 @@
     var ul = $('#briefs'); ul.innerHTML = '';
     DATA.briefs.forEach(function (x) {
       var li = el('li');
-      li.appendChild(el('span', 'k', x.tag));
+      li.appendChild(el('span', 'cat', x.tag));
       var t = el('span');
       t.appendChild(document.createTextNode(x.text + ' '));
       t.appendChild(linkTo(x.source));
@@ -97,10 +126,9 @@
     }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
       if (!rows || !rows.length) return;
       var latest = rows[0].captured_at, ul = $('#trends');
-      ul.innerHTML = '';
+      ul.innerHTML = ''; $('#x-empty').hidden = true;
       rows.filter(function (x) { return x.captured_at === latest; }).slice(0, 8).forEach(function (x) {
         var li = el('li');
-        li.appendChild(el('span', 'k', String(x.rank)));
         li.appendChild(el('span', null, x.name + (x.post_count ? ' · ' + x.post_count.toLocaleString('tr-TR') + ' gönderi' : '')));
         ul.appendChild(li);
       });
@@ -229,7 +257,7 @@
     $('#t-diff').textContent = S.best.d === 0 ? 'tam isabet' : S.best.d + ' fark';
     S.tiles.forEach(function (t, i) {
       var b = document.getElementById('tile-' + i);
-      b.className = 'g-tile';
+      b.className = 't';
       if (t.used) { b.classList.add('used'); b.textContent = ''; b.disabled = true; b.setAttribute('aria-label', 'Kullanıldı'); b.removeAttribute('aria-pressed'); return; }
       b.disabled = S.done; b.textContent = t.v;
       b.setAttribute('aria-label', String(t.v));
@@ -240,7 +268,7 @@
       if (!reduceMotion && shakeId === i) { void b.offsetWidth; b.classList.add('shake'); }
     });
     popId = -1; shakeId = -1;
-    document.querySelectorAll('.g-op').forEach(function (b) {
+    document.querySelectorAll('.op').forEach(function (b) {
       b.classList.toggle('sel', S.op === b.dataset.op);
       b.setAttribute('aria-pressed', S.op === b.dataset.op ? 'true' : 'false');
     });
@@ -248,10 +276,10 @@
     $('#btn-undo').disabled = !S.hist.length;
     $('#btn-end').textContent = S.armed === 'end' ? S.best.v + ' ile bitir' : 'En yakınla bitir';
     $('#btn-reveal').textContent = S.armed === 'reveal' ? 'Evet, cevabı göster' : 'Cevabı göster';
-    $('#g-play').hidden = S.done;
+    $('#play').hidden = S.done;
     var res = $('#result'); res.hidden = !S.done;
     if (S.done) {
-      $('#r-stars').textContent = S.gaveUp ? 'Cevaba baktın' : S.stars + ' yıldız';
+      $('#r-stars').textContent = S.gaveUp ? 'Cevaba baktın' : '★'.repeat(S.stars) + '☆'.repeat(3 - S.stars);
       $('#r-head').textContent = S.gaveUp ? S.target + ' böyle bulunuyor' : (S.best.d === 0 ? 'Tam isabet: ' + S.target : S.best.v + ' ile ' + S.best.d + ' farkla bitirdin');
       $('#r-line').textContent = S.gaveUp ? 'Seri bozulmadı; yarın yeni bir işlem var.' : S.steps.length + ' hamle, ' + fmtTime(S.end - S.start);
       var sol = $('#solution'); sol.innerHTML = '';
@@ -284,7 +312,7 @@
       S = saved; S.armed = null; if (!S.msg) S.msg = 'Bir sayı seç, sonra bir işlem, sonra ikinci sayı.';
     } else S = freshState(today);
     for (var i = 0; i < 6; i++) (function (idx) { document.getElementById('tile-' + idx).addEventListener('click', function () { onTile(idx); }); })(i);
-    document.querySelectorAll('.g-op').forEach(function (b) { b.addEventListener('click', function () { onOp(b.dataset.op); }); });
+    document.querySelectorAll('.op').forEach(function (b) { b.addEventListener('click', function () { onOp(b.dataset.op); }); });
     $('#btn-undo').addEventListener('click', onUndo);
     $('#btn-end').addEventListener('click', onEnd);
     $('#btn-reveal').addEventListener('click', onReveal);
