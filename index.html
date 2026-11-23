@@ -1,492 +1,306 @@
-<!DOCTYPE html>
-<html lang="tr">
+<!doctype html>
+<html lang="tr" data-type="software" data-radius="soft" data-ground="sage" data-buttons="arrow" data-motion>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kısaca</title>
-<meta name="description" content="Günün özeti beş dakikada, yanında günde bir bulmaca: Günün İşlemi.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kısaca: günün haberleri ve bir sayı bulmacası</title>
+<meta name="description" content="Her sabah 06.30'da Türkiye ve dünyadan 8 haber, her biri üç cümlede; yanında iki dakikalık sayı bulmacası Günün İşlemi.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kısaca: günün haberleri ve bir sayı bulmacası">
+<meta property="og:description" content="Her sabah 8 haber, her biri üç cümlede, ve iki dakikalık bir bulmaca.">
+<meta property="og:image" content="share.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#f7f9f8">
+<!-- <link rel="canonical" href="https://[alan adı alınınca]/"> -->
+<meta name="site-kind" content="software">
+<meta name="page-type" content="software">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/system.css">
+<link rel="stylesheet" href="assets/ui/cards.css">
+<link rel="stylesheet" href="assets/motion/motion.css">
+<link rel="stylesheet" href="assets/backgrounds/backgrounds.css">
+<link rel="stylesheet" href="assets/layout/layout.css">
+<link rel="stylesheet" href="assets/icons/icon.css">
 <style>
-/* Layout: gazete manşeti solda okunur, Günün İşlemi sağda yapışık bir oyun tahtası; telefonda tek sütun. */
 :root {
-  --paper: #ECEEF1;
-  --surface: #FFFFFF;
-  --ink: #12151B;
-  --muted: #5A6371;
-  --rule: #C6CCD4;
-  --accent: #2340D2;
-  --panel: #2340D2;
-  --panel-deep: #142A9E;
-  --tile: #FFC72C;
-  --tile-edge: #C99500;
-  --tile-ink: #1B1400;
-  --bad: #FF8A7A;
-  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Newsreader", "Iowan Old Style", Georgia, serif;
-  color-scheme: light;
+  --p-bg: #f7f9f8; --p-surface: #ebf0ee; --p-ink: #06525c; --p-muted: #2f737d;
+  --p-accent: #06525c; --p-accent-ink: #f7f9f8; --p-action: #06525c; --p-action-ink: #f7f9f8;
+  --p-inv-bg: #06525c; --p-inv-surface: #205d66; --p-inv-ink: #f7f9f8; --p-inv-muted: #c1d0d2;
+  --p-inv-accent: #f7f9f8; --p-inv-accent-ink: #06525c; --p-inv-action: #f7f9f8; --p-inv-action-ink: #06525c;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-text: "Outfit", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --display-weight: 400;
+  --display-tracking: -0.03em;
+  --display-tracking-xl: -0.04em;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0D1015;
-    --surface: #161A21;
-    --ink: #E8EBEF;
-    --muted: #9AA3AF;
-    --rule: #2B313B;
-    --accent: #8EA0FF;
-    --panel: #1F37BE;
-    --panel-deep: #0F1F78;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0D1015;
-  --surface: #161A21;
-  --ink: #E8EBEF;
-  --muted: #9AA3AF;
-  --rule: #2B313B;
-  --accent: #8EA0FF;
-  --panel: #1F37BE;
-  --panel-deep: #0F1F78;
-  color-scheme: dark;
-}
+</style>
+<link rel="stylesheet" href="assets/layout/demo.css">
+<script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
+<script src="assets/backgrounds/backgrounds.js"></script>
+<script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
+<link rel="modulepreload" href="assets/moments/moments.js">
+<link rel="modulepreload" href="assets/moments/lib.js">
+<link rel="modulepreload" href="assets/moments/line-carries-colour/moment.js">
+<style>
+  /* the hero window: today's edition as the app shows it, on a light frame */
+  .hero__window { background: linear-gradient(180deg, #dfe9e6, #c9dcd7 70%, #b7cfc9); }
+  .ed-win .d-win__bar b { color: #06525c; font-weight: 500; }
+  .ed-win .d-win__bar .sp { flex: 1; }
+  .ed-win .d-win__body { grid-template-columns: 220px 1fr; min-height: 380px; }
+  .ed-side { border-right: 1px solid rgb(6 82 92 / .08); padding: 12px; display: grid; align-content: start; gap: 2px; font-size: 13px; color: #2f737d; }
+  .ed-side span { padding: 8px 10px; border-radius: 8px; }
+  .ed-side span.is-on { background: #ebf0ee; color: #06525c; font-weight: 500; }
+  .ed-main { padding: 18px 22px; display: grid; gap: 12px; align-content: start; text-align: left; }
+  .ed-main h3 { font: 500 15px/1.3 var(--font-text); color: #2f737d; margin: 0; }
+  .ed-main ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: q; }
+  .ed-main li { counter-increment: q; display: grid; grid-template-columns: 28px 1fr; gap: 8px; font: 500 17px/1.35 var(--font-text); color: #06525c; }
+  .ed-main li::before { content: counter(q); font: 500 13px/1.9 var(--font-mono); color: #2f737d; }
+  @media (max-width: 639px) { .ed-win .d-win__body { grid-template-columns: 1fr; } .ed-side { display: none; } .ed-main li { font-size: 15px; } .ed-win .d-win__bar .sp ~ span { display: none; } }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 18px;
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-}
-a { color: inherit; text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent); text-underline-offset: 3px; }
-a:hover { color: var(--accent); }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  /* the stories: one lead and seven short cards */
+  .news .card { --c-pad: var(--s-6); gap: var(--s-3); }
+  .news .card .t-label { color: var(--muted); font-family: var(--font-mono); }
+  .news .card > p { color: var(--ink); }
+  .hero--centred .hero__lead { color: var(--ink); }
+  @media (max-width: 639px) { #stories-b .card > p { display: none; } #stories-a .card > .muted { display: none; } }
+  .news .src { font-size: var(--t-small); color: var(--muted); }
+  .news .src a { color: var(--muted); }
 
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 56px; }
+  /* the game board inside its section */
+  .game-board { display: grid; gap: var(--s-4); }
+  .g-target { display: flex; align-items: end; justify-content: space-between; gap: var(--s-4); padding: var(--s-5) var(--s-6); border-radius: var(--r-lg); background: var(--p-inv-surface); }
+  .g-target b { font: 400 clamp(40px, 3.4vw, 48px)/.9 var(--font-display); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+  .g-target dl { margin: 0; text-align: right; font-size: var(--t-small); color: var(--p-inv-muted); }
+  .g-target dd { margin: 0; font: 500 22px/1.2 var(--font-mono); color: var(--p-inv-ink); }
+  .g-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-3); }
+  .g-tile { height: 112px; border: 0; border-radius: var(--r-md); background: var(--p-bg); color: var(--p-ink); font: 500 34px/1 var(--font-display); font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: 0 3px 0 rgb(0 0 0 / .18); transition: transform .15s var(--ease), box-shadow .15s var(--ease), background-color .15s var(--ease); }
+  .g-tile:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgb(0 0 0 / .18); }
+  .g-tile:active { transform: translateY(1px); box-shadow: 0 1px 0 rgb(0 0 0 / .18); }
+  .g-tile.sel { background: #ffd27a; }
+  .g-tile.long { font-size: 24px; }
+  .g-tile.used { background: transparent; box-shadow: none; outline: 1px dashed rgb(247 249 248 / .3); outline-offset: -1px; color: transparent; cursor: default; transform: none; }
+  .g-tile.pop { animation: g-pop .3s cubic-bezier(.34, 1.56, .64, 1); }
+  .g-tile.shake { animation: g-shake .3s ease; }
+  @keyframes g-pop { from { transform: scale(.8); } to { transform: scale(1); } }
+  @keyframes g-shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .g-ops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-3); }
+  .g-op { height: 72px; border-radius: var(--r-md); border: 1px solid rgb(247 249 248 / .35); background: transparent; color: var(--p-inv-ink); font: 400 28px/1 var(--font-display); cursor: pointer; transition: background-color .15s var(--ease); }
+  .g-op:hover { background: rgb(247 249 248 / .1); }
+  .g-op.sel { background: var(--p-inv-ink); color: var(--p-inv-bg); }
+  .g-msg { min-height: 48px; margin: 0; color: var(--p-inv-ink); }
+  .g-msg.err { color: #ffd27a; }
+  .g-actions { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+  .g-actions .btn { flex: 1 1 0; }
+  .g-result { display: grid; gap: var(--s-3); padding: var(--s-6); border-radius: var(--r-lg); background: var(--p-inv-surface); }
+  .g-result[hidden], #g-play[hidden] { display: none; }
+  .g-result h3 { font: 400 32px/1.1 var(--font-display); letter-spacing: -0.02em; margin: 0; }
+  .g-result ol { margin: 0; padding-left: 1.4em; font-family: var(--font-mono); }
+  .g-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4); margin: 0; }
+  .g-stats dt { font-size: var(--t-small); color: var(--p-inv-muted); }
+  .g-stats dd { margin: 0; font: 400 26px/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+  #share-fallback { width: 100%; min-height: 88px; border-radius: var(--r-md); border: 0; padding: var(--s-3); font: 400 15px/1.4 var(--font-mono); }
+  @media (prefers-reduced-motion: reduce) { .g-tile, .g-tile.pop, .g-tile.shake { animation: none; transition: none; } }
 
-/* ---------- Masthead ---------- */
-.mast { padding-top: 26px; }
-.mast-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.wordmark {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(64px, 13vw, 128px);
-  line-height: .82;
-  letter-spacing: -0.055em;
-  font-variation-settings: "opsz" 96;
-  margin: 0;
-}
-.wordmark .dot { color: var(--accent); }
-.tagline {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 17px;
-  color: var(--muted);
-  margin: 0 0 8px;
-  max-width: 22ch;
-  text-align: right;
-}
-@media (max-width: 640px) { .tagline { text-align: left; max-width: none; margin-bottom: 0; } }
-.folio {
-  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  margin-top: 18px;
-  border-top: 4px solid var(--ink);
-  border-bottom: 1px solid var(--ink);
-  padding: 8px 0;
-  font-family: var(--font-display);
-  font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-}
-.teaser {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: 100%;
-  margin-top: 16px;
-  padding: 12px 16px;
-  border: 0; border-radius: 14px;
-  background: var(--panel); color: #fff;
-  font-family: var(--font-display); font-size: 16px; font-weight: 500;
-  cursor: pointer; text-align: left;
-}
-.teaser b { color: var(--tile); font-weight: 800; font-variant-numeric: tabular-nums; }
-.teaser .go { font-weight: 700; white-space: nowrap; }
-
-/* ---------- Grid ---------- */
-.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; margin-top: 28px; }
-@media (min-width: 1000px) {
-  .layout { grid-template-columns: minmax(0, 1fr) 384px; gap: 60px; }
-  .game-col { position: sticky; top: 20px; align-self: start; }
-  .teaser { display: none; }
-  .tagline { margin-bottom: 14px; }
-}
-
-/* ---------- Quick ---------- */
-.quick { border-left: 4px solid var(--accent); padding: 2px 0 2px 18px; }
-.eyebrow {
-  font-family: var(--font-display);
-  font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--accent); margin: 0 0 8px;
-}
-.quick ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; counter-reset: q; }
-.quick li {
-  counter-increment: q;
-  font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.3;
-  display: grid; grid-template-columns: 22px 1fr; gap: 6px;
-}
-.quick li::before { content: counter(q); color: var(--muted); font-weight: 800; font-variant-numeric: tabular-nums; }
-
-/* ---------- Stories ---------- */
-.stories { margin-top: 36px; display: grid; gap: 0; }
-.story {
-  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 12px;
-  padding: 22px 0;
-  border-top: 1px solid var(--rule);
-}
-.story-num {
-  font-family: var(--font-display); font-weight: 800; font-size: 26px; line-height: 1.05;
-  color: var(--muted); opacity: .55; font-variant-numeric: tabular-nums;
-}
-.kicker {
-  font-family: var(--font-display);
-  font-weight: 700; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--accent); margin: 0 0 6px;
-}
-.story h3 {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: 24px; line-height: 1.15; letter-spacing: -0.012em;
-  margin: 0 0 8px; text-wrap: balance;
-}
-.summary { margin: 0; max-width: 64ch; }
-.why {
-  margin: 10px 0 0; max-width: 64ch;
-  font-size: 16.5px; color: var(--muted);
-}
-.why b { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: 14.5px; }
-.note { margin: 8px 0 0; font-size: 14.5px; font-style: italic; color: var(--muted); }
-.src {
-  margin: 10px 0 0;
-  font-family: var(--font-display); font-size: 13.5px; color: var(--muted);
-}
-.src a { color: var(--muted); }
-.src a:hover { color: var(--accent); }
-
-.story.lead { border-top: 4px solid var(--ink); padding-top: 18px; grid-template-columns: minmax(0, 1fr); }
-.story.lead .story-num { display: none; }
-.story.lead h3 { font-size: clamp(30px, 4.6vw, 46px); line-height: 1.04; letter-spacing: -0.025em; margin-bottom: 12px; }
-.story.lead .summary { font-size: 20px; }
-
-/* ---------- Day figure ---------- */
-.figure {
-  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 8px 22px;
-  margin: 8px 0 10px; padding: 18px 0;
-  border-top: 4px solid var(--ink); border-bottom: 1px solid var(--ink);
-}
-.figure .big {
-  font-family: var(--font-display); font-weight: 800;
-  font-size: clamp(64px, 11vw, 108px); line-height: .8; letter-spacing: -0.05em;
-  color: var(--accent); font-variant-numeric: tabular-nums;
-}
-.figure p { margin: 0; }
-.figure .cap { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.3; }
-@media (max-width: 520px) { .figure { grid-template-columns: minmax(0, 1fr); } }
-
-/* ---------- Briefs ---------- */
-.briefs-wrap { margin-top: 30px; border-top: 4px solid var(--ink); padding-top: 14px; }
-.briefs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-.briefs li {
-  display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 12px;
-  padding: 11px 0; border-bottom: 1px solid var(--rule);
-  font-size: 17px; line-height: 1.45;
-}
-.briefs .tag {
-  font-family: var(--font-display); font-weight: 700; font-size: 12px;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--muted); padding-top: 4px;
-}
-.briefs .bsrc { font-family: var(--font-display); font-size: 13px; color: var(--muted); white-space: nowrap; }
-.briefs .bsrc a { color: var(--muted); }
-@media (max-width: 520px) { .briefs li { grid-template-columns: minmax(0, 1fr); gap: 2px; } .briefs .tag { padding-top: 0; } }
-
-/* ---------- X gündemi ---------- */
-.xg { margin-top: 30px; padding: 16px 18px; border: 2px dashed var(--accent); border-radius: 16px; background: var(--surface); }
-.xg[hidden] { display: none; }
-.xg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.xg-head .eyebrow { margin: 0; }
-.xg-badge { font-family: var(--font-display); font-weight: 700; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 3px 8px; }
-.xg-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 18px; counter-reset: x; }
-.xg-list li { counter-increment: x; display: grid; grid-template-columns: 26px 1fr; gap: 6px; font-family: var(--font-display); font-size: 16px; font-weight: 600; padding: 4px 0; border-bottom: 1px solid var(--rule); }
-.xg-list li::before { content: counter(x); color: var(--muted); font-weight: 800; font-variant-numeric: tabular-nums; }
-.xg-list small { display: block; font-weight: 500; font-size: 13px; color: var(--muted); }
-.xg-empty, .xg-meta { margin: 10px 0 0; font-family: var(--font-display); font-size: 14px; color: var(--muted); }
-
-.foot {
-  margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--rule);
-  font-family: var(--font-display); font-size: 14px; color: var(--muted);
-  display: grid; gap: 4px;
-}
-.foot p { margin: 0; max-width: 70ch; }
-
-/* ---------- Game ---------- */
-.game {
-  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--panel) 88%, #fff) 0%, var(--panel) 55%, var(--panel-deep) 100%);
-  color: #fff;
-  border-radius: 24px;
-  padding: 20px 18px 18px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 18px 40px -22px rgba(20, 30, 110, .65);
-  font-family: var(--font-display);
-}
-.game :focus-visible { outline-color: var(--tile); }
-.g-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.g-title { margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em; }
-.g-meta { font-weight: 600; font-size: 14px; opacity: .85; font-variant-numeric: tabular-nums; }
-.g-sub { margin: 2px 0 0; font-size: 14px; opacity: .8; }
-
-.target {
-  margin: 16px 0 14px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 10px 16px 12px;
-  border-radius: 16px;
-  background: rgba(4, 8, 40, .38);
-  box-shadow: inset 0 2px 0 rgba(0,0,0,.28), inset 0 -1px 0 rgba(255,255,255,.08);
-}
-.t-label { font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; opacity: .8; }
-.t-num {
-  font-weight: 800; font-size: 66px; line-height: 1; letter-spacing: -0.03em;
-  color: var(--tile); font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 22px rgba(255, 199, 44, .35);
-}
-.t-best { text-align: right; font-weight: 600; font-size: 13px; opacity: .9; font-variant-numeric: tabular-nums; }
-.t-best b { display: block; font-size: 22px; font-weight: 800; }
-
-.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.tile {
-  appearance: none; border: 0; cursor: pointer;
-  height: 70px; border-radius: 14px;
-  background: var(--tile); color: var(--tile-ink);
-  font-family: var(--font-display); font-weight: 800; font-size: 34px; letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  box-shadow: 0 5px 0 var(--tile-edge);
-  transition: transform .08s ease, box-shadow .08s ease, background-color .12s ease;
-}
-.tile.long { font-size: 25px; }
-.tile:hover { background: #FFD24F; }
-.tile:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--tile-edge); }
-.tile.sel { background: #fff; box-shadow: 0 5px 0 #B9C2EA, 0 0 0 3px var(--tile); transform: translateY(-2px); }
-.tile.used {
-  background: transparent; box-shadow: none; color: transparent; cursor: default;
-  outline: 2px dashed rgba(255,255,255,.28); outline-offset: -2px;
-}
-.tile.pop { animation: pop .32s cubic-bezier(.3, 1.6, .5, 1); }
-.tile.shake { animation: shake .3s ease; }
-.tile.win { animation: hop .6s cubic-bezier(.3, 1.4, .5, 1) both; }
-@keyframes pop { 0% { transform: scale(.7); } 100% { transform: scale(1); } }
-@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
-@keyframes hop { 0% { transform: translateY(0); } 40% { transform: translateY(-14px); } 100% { transform: translateY(0); } }
-.t-num.flash { animation: flash .9s ease 2; }
-@keyframes flash { 50% { color: #fff; text-shadow: 0 0 30px rgba(255,255,255,.7); } }
-
-.ops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-.op {
-  appearance: none; cursor: pointer;
-  height: 54px; border-radius: 14px;
-  background: rgba(255,255,255,.12); color: #fff;
-  border: 1px solid rgba(255,255,255,.24);
-  font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1;
-}
-.op:hover { background: rgba(255,255,255,.2); }
-.op.sel { background: #fff; color: var(--panel); border-color: #fff; }
-
-.msg { min-height: 44px; margin: 12px 2px 0; font-size: 15px; font-weight: 500; line-height: 1.35; }
-.msg.err { color: var(--bad); }
-
-.actions { display: flex; gap: 8px; }
-.ghost {
-  flex: 1 1 0; appearance: none; cursor: pointer;
-  padding: 10px 8px; border-radius: 999px;
-  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.38);
-  font-family: var(--font-display); font-weight: 600; font-size: 14px;
-}
-.ghost:hover { background: rgba(255,255,255,.1); }
-.ghost:disabled { opacity: .4; cursor: default; }
-.ghost.armed { background: var(--tile); color: var(--tile-ink); border-color: var(--tile); flex-grow: 2; }
-
-.reveal {
-  display: block; width: 100%; margin-top: 10px;
-  appearance: none; cursor: pointer; background: transparent; border: 0; color: #fff;
-  font-family: var(--font-display); font-weight: 600; font-size: 14px; opacity: .85;
-  text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255,255,255,.45);
-  padding: 6px;
-}
-.reveal:hover { opacity: 1; }
-.reveal.armed { opacity: 1; text-decoration: none; background: rgba(255,255,255,.14); border-radius: 999px; }
-.solution[open] summary { margin-bottom: 4px; }
-.solution ol li { font-size: 17px; font-weight: 700; padding: 3px 0; }
-.result { margin-top: 14px; padding: 16px; border-radius: 16px; background: rgba(255,255,255,.1); }
-.result[hidden] { display: none; }
-.r-stars { font-size: 30px; letter-spacing: 4px; color: var(--tile); line-height: 1; }
-.r-stars .off { color: rgba(255,255,255,.25); }
-.r-head { margin: 8px 0 2px; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
-.r-line { margin: 0; font-size: 14px; opacity: .9; font-variant-numeric: tabular-nums; }
-.share {
-  margin-top: 12px; width: 100%;
-  appearance: none; cursor: pointer; border: 0;
-  padding: 12px; border-radius: 999px;
-  background: var(--tile); color: var(--tile-ink);
-  font-family: var(--font-display); font-weight: 800; font-size: 16px;
-  box-shadow: 0 4px 0 var(--tile-edge);
-}
-.share:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--tile-edge); }
-#share-fallback {
-  width: 100%; margin-top: 10px; min-height: 92px; resize: none;
-  border-radius: 10px; border: 0; padding: 10px;
-  font: 500 14px/1.4 var(--font-display); color: var(--ink); background: var(--surface);
-}
-.solution { margin-top: 12px; font-size: 14px; }
-.solution summary { cursor: pointer; font-weight: 700; }
-.solution ol { margin: 8px 0 0; padding-left: 20px; font-variant-numeric: tabular-nums; }
-.next { margin: 12px 0 0; font-size: 13px; opacity: .85; font-variant-numeric: tabular-nums; }
-
-.stats {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); text-align: center;
-  margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.2);
-}
-.stats b { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.stats span { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .78; }
-
-.howto { margin-top: 14px; font-size: 14px; line-height: 1.45; }
-.howto summary { cursor: pointer; font-weight: 700; }
-.howto p { margin: 8px 0 0; opacity: .92; }
-
-@media (prefers-reduced-motion: reduce) {
-  .tile, .tile.pop, .tile.shake, .tile.win, .t-num.flash { animation: none !important; transition: none !important; }
-}
+  /* the trends and the briefs */
+  .rows-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .rows-list li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: var(--s-4); padding: var(--s-2) 0; border-top: 1px solid var(--line); }
+  .rows-list li:last-child { border-bottom: 1px solid var(--line); }
+  .rows-list .k { font: 500 14px/1.6 var(--font-mono); color: var(--muted); }
+  .rows-list a { color: var(--muted); font-size: var(--t-small); }
+  .story-rows li { padding: var(--s-3) 0; }
+  .story-rows b { font-weight: 500; }
+  .story-rows .src { display: inline; }
+  .day-number { font: 400 clamp(44px, 4vw, 56px)/.9 var(--font-display); letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
+  @media (max-width: 639px) { .rows-list li { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <header class="mast">
-    <div class="mast-top">
-      <h1 class="wordmark">Kısaca<span class="dot">.</span></h1>
-      <p class="tagline">Günün özeti beş dakikada, yanında tek bir bulmaca.</p>
+<!-- type: software (günlük haber uygulaması + bulmaca)
+     deal: hero centred, nav nav-mega, close close-type, footer footer-dark, rhythm dark-band, buttons arrow, mark wordmark, grounds none (sage lit ground)
+     palette teal-on-paper: kâğıt beyazı zemin ve petrol mavisi mürekkep, sabah okunan bir bültenin sakin, gazete kâğıdına yakın tonu
+     type outfit (Outfit + DM Mono)
+     moments: line-carries-colour on #oyun -->
+<header class="nav">
+  <div class="wrap nav__bar">
+    <a class="skip-link" href="#top">İçeriğe geç</a>
+    <a class="nav__logo" href="#top">Kısaca</a>
+    <nav class="nav__links" aria-label="Ana menü">
+      <div class="nav__item">
+        <a class="nav__link" href="#haberler">Haberler <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <div class="nav__menu">
+          <div class="wrap grid">
+            <div class="menu-col span-3">
+              <p class="t-label">Bugün</p>
+              <a href="#haberler">Manşet<span>Günün en önemli haberi</span></a>
+              <a href="#haberler">Sekiz haber<span>Her biri üç cümle</span></a>
+              <a href="#gundem">Kısa kısa<span>Tek cümlelik gelişmeler</span></a>
+            </div>
+            <div class="menu-col span-3">
+              <p class="t-label">Oyun</p>
+              <a href="#oyun">Günün İşlemi<span>Altı sayıyla hedefe ulaş</span></a>
+              <a href="#oyun">İstatistiklerin<span>Seri, rekor, tam isabet</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav__item"><a class="nav__link" href="#oyun">Günün İşlemi</a></div>
+      <div class="nav__item"><a class="nav__link" href="#gundem">Gündem</a></div>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--primary" href="#haberler">Bugünün özetini oku</a>
     </div>
-    <div class="folio">
-      <span id="folio-date"></span>
-      <span id="folio-ed"></span>
-    </div>
-    <button class="teaser" id="teaser" type="button">
-      <span>Günün İşlemi <b id="teaser-no"></b> · Hedef <b id="teaser-target"></b></span>
-      <span class="go" id="teaser-go">Oyna ↓</span>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-label="Menü">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
-  </header>
-
-  <div class="layout">
-    <main class="news-col">
-      <section class="quick" aria-labelledby="quick-h">
-        <p class="eyebrow" id="quick-h">Vaktin yoksa</p>
-        <ol id="quick"></ol>
-      </section>
-
-      <section class="stories" id="stories" aria-label="Günün haberleri"></section>
-
-      <section class="xg" id="xg" hidden aria-labelledby="xg-h">
-        <div class="xg-head">
-          <p class="eyebrow" id="xg-h">X'te gündem</p>
-          <span class="xg-badge">Yakında</span>
-        </div>
-        <ol class="xg-list" id="xg-list"></ol>
-        <p class="xg-empty" id="xg-empty">Henüz veri yok. Resmi X API bağlanınca Türkiye'nin gündemi burada saatlik güncellenecek.</p>
-        <p class="xg-meta" id="xg-meta"></p>
-      </section>
-
-      <section class="briefs-wrap" aria-labelledby="briefs-h">
-        <p class="eyebrow" id="briefs-h">Kısa kısa</p>
-        <ul class="briefs" id="briefs"></ul>
-      </section>
-
-      <footer class="foot">
-        <p id="asof"></p>
-        <p>Kısaca, günün önemli haberlerini farklı kaynaklardan derleyip kısaltır. Ayrıntı için her haberin altındaki kaynak bağlantılarına göz atın.</p>
-        <p>Günün İşlemi her gece 00.00'da (TSİ) yenilenir.</p>
-      </footer>
-    </main>
-
-    <aside class="game-col" id="oyun" aria-label="Günün İşlemi oyunu">
-      <section class="game">
-        <div class="g-head">
-          <h2 class="g-title">Günün İşlemi</h2>
-          <span class="g-meta"><span id="g-no"></span> · <span id="g-time">0:00</span></span>
-        </div>
-        <p class="g-sub">Sayıları dört işlemle birleştir, hedefi tuttur.</p>
-
-        <div class="target">
-          <div>
-            <div class="t-label">Hedef</div>
-            <div class="t-num" id="t-num">000</div>
-          </div>
-          <div class="t-best">En yakın<b id="t-best">0</b><span id="t-diff"></span></div>
-        </div>
-
-        <div class="tiles" id="tiles">
-          <button class="tile" type="button" id="tile-0"></button>
-          <button class="tile" type="button" id="tile-1"></button>
-          <button class="tile" type="button" id="tile-2"></button>
-          <button class="tile" type="button" id="tile-3"></button>
-          <button class="tile" type="button" id="tile-4"></button>
-          <button class="tile" type="button" id="tile-5"></button>
-        </div>
-
-        <div id="play-controls">
-          <div class="ops" role="group" aria-label="İşlemler">
-            <button class="op" type="button" id="op-add" data-op="+" aria-label="Topla">+</button>
-            <button class="op" type="button" id="op-sub" data-op="−" aria-label="Çıkar">−</button>
-            <button class="op" type="button" id="op-mul" data-op="×" aria-label="Çarp">×</button>
-            <button class="op" type="button" id="op-div" data-op="÷" aria-label="Böl">÷</button>
-          </div>
-          <p class="msg" id="msg" aria-live="polite"></p>
-          <div class="actions">
-            <button class="ghost" type="button" id="btn-undo">Geri al</button>
-            <button class="ghost" type="button" id="btn-reset">Baştan</button>
-            <button class="ghost" type="button" id="btn-end">Bitir</button>
-          </div>
-          <button class="reveal" type="button" id="btn-reveal">Bulamadın mı? Cevabı göster</button>
-        </div>
-
-        <div class="result" id="result" hidden>
-          <div class="r-stars" id="r-stars" aria-hidden="true"></div>
-          <p class="r-head" id="r-head"></p>
-          <p class="r-line" id="r-line"></p>
-          <button class="share" type="button" id="btn-share">Sonucu kopyala</button>
-          <textarea id="share-fallback" readonly hidden aria-label="Paylaşım metni"></textarea>
-          <details class="solution" id="solution-box">
-            <summary id="solution-sum">Bir çözüm</summary>
-            <ol id="solution"></ol>
-          </details>
-          <p class="next" id="next"></p>
-        </div>
-
-        <div class="stats" aria-label="İstatistiklerin">
-          <div><b id="s-played">0</b><span>Oyun</span></div>
-          <div><b id="s-exact">0</b><span>Tam</span></div>
-          <div><b id="s-streak">0</b><span>Seri</span></div>
-          <div><b id="s-max">0</b><span>Rekor</span></div>
-        </div>
-
-        <details class="howto">
-          <summary>Nasıl oynanır?</summary>
-          <p>Bir sayıya, sonra bir işleme, sonra ikinci sayıya dokun. İki sayı birleşip yeni bir sayıya dönüşür ve sıradaki işlem için seçili kalır.</p>
-          <p>Her sayıyı bir kez kullanırsın, hepsini kullanmak zorunda değilsin. Çıkarmada büyükten küçük çıkar; bölme tam çıkmalı.</p>
-          <p>Tam isabet 3 yıldız. Tutturamazsan "Bitir" ile en yakın sayınla bitir: 5 farka kadar 2, 10 farka kadar 1 yıldız.</p>
-        </details>
-      </section>
-    </aside>
   </div>
-</div>
+</header>
 
-<script id="kisaca-data" type="application/json">
-{
+<main id="top">
+  <section class="hero hero--centred" data-enter aria-labelledby="hero-h">
+    <div class="wrap"><div class="hero-text">
+      <div class="hero__c">
+        <a class="pill" href="#haberler"><span id="pill-date">17 Kasım 2026, Salı</span><span class="muted" id="pill-ed">Sabah baskısı, 8 haber</span></a>
+        <h1 id="hero-h">Günün haberleri, beş dakikada</h1>
+        <p class="hero__lead">Her sabah 06.30'da Türkiye ve dünyadan 8 haberi üçer cümleyle yazıyoruz. Okuması dört dakika, yanındaki sayı bulmacası iki dakika.</p>
+        <div class="btn-row"><a class="btn btn--primary" href="#haberler">Bugünün özetini oku<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a><a class="btn btn--secondary" href="#oyun">Günün İşlemi'ni oyna</a></div>
+      </div>
+      <div class="hero__window" role="img" aria-label="Kısaca uygulamasında bugünün üç maddelik özeti">
+        <div class="ly-piece d-win ed-win" aria-hidden="true">
+          <div class="d-win__bar"><span class="d-win__dots"><i></i><i></i><i></i></span><span><b>Kısaca</b> · <span id="win-date">17 Kasım</span></span><span class="sp"></span><span>4 dk okuma</span></div>
+          <div class="d-win__body">
+            <div class="ed-side"><span class="is-on">Vaktin yoksa</span><span>Manşet</span><span>Türkiye</span><span>Dünya</span><span>Günün İşlemi</span></div>
+            <div class="ed-main">
+              <h3>Bugün üç satırda</h3>
+              <ol id="quick" data-ly-steps="900"></ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section g2 news" id="haberler" aria-labelledby="haberler-h">
+    <div class="wrap">
+      <div class="group">
+        <div class="section-head">
+          <h2 id="haberler-h">Bugünün 8 haberi. <span class="muted">Her biri üç cümle, altında kaynağı.</span></h2>
+        </div>
+        <div class="grid" id="stories-a"></div>
+      </div>
+      <ol class="rows-list story-rows" id="stories-b"></ol>
+    </div>
+  </section>
+
+  <section class="section ground-inverse" id="oyun" aria-labelledby="oyun-h" data-moment="line-carries-colour" data-moment-opts='{"from": "base"}'>
+    <div class="wrap">
+      <div class="grid">
+        <div class="span-5 stack-4">
+          <div class="section-head">
+            <h2 id="oyun-h">Günün İşlemi <span id="g-no">#1</span>. <span class="muted">Altı sayı, dört işlem, tek hedef.</span></h2>
+            <p>Bir sayıya, bir işleme, sonra ikinci sayıya dokun; ikisi birleşip yeni sayı olur. Tam isabet üç yıldız; tutturamazsan en yakın sayınla bitir.</p>
+          </div>
+
+        </div>
+        <div class="span-6 start-7 game-board">
+          <div class="g-target">
+            <div><p class="t-label">Hedef</p><b id="t-num">171</b></div>
+            <dl><dt>En yakın sayın</dt><dd id="t-best">10</dd><dd id="t-diff" class="t-small"></dd><dt>Süre</dt><dd id="g-time">0:00</dd></dl>
+          </div>
+          <div class="g-tiles" id="g-tiles">
+            <button class="g-tile" type="button" id="tile-0">6</button>
+            <button class="g-tile" type="button" id="tile-1">1</button>
+            <button class="g-tile" type="button" id="tile-2">9</button>
+            <button class="g-tile" type="button" id="tile-3">2</button>
+            <button class="g-tile" type="button" id="tile-4">3</button>
+            <button class="g-tile" type="button" id="tile-5">10</button>
+          </div>
+          <div id="g-play" class="game-board">
+            <div class="g-ops" role="group" aria-label="İşlemler">
+              <button class="g-op" type="button" data-op="+" aria-label="Topla">+</button>
+              <button class="g-op" type="button" data-op="−" aria-label="Çıkar">−</button>
+              <button class="g-op" type="button" data-op="×" aria-label="Çarp">×</button>
+              <button class="g-op" type="button" data-op="÷" aria-label="Böl">÷</button>
+            </div>
+            <p class="g-msg" id="msg" aria-live="polite">Bir sayı seç, sonra bir işlem, sonra ikinci sayı.</p>
+            <div class="g-actions">
+              <button class="btn btn--secondary" type="button" id="btn-undo">Hamleyi geri al</button>
+              <button class="btn btn--secondary" type="button" id="btn-end">En yakınla bitir</button>
+              <button class="btn btn--secondary" type="button" id="btn-reveal">Cevabı göster</button>
+            </div>
+          </div>
+          <dl class="g-stats" aria-label="İstatistiklerin">
+            <div><dt>Oyun</dt><dd id="s-played">0</dd></div>
+            <div><dt>Tam isabet</dt><dd id="s-exact">0</dd></div>
+            <div><dt>Seri</dt><dd id="s-streak">0</dd></div>
+            <div><dt>Rekor</dt><dd id="s-max">0</dd></div>
+          </dl>
+          <div class="g-result" id="result" hidden>
+            <p class="t-label" id="r-stars"></p>
+            <h3 id="r-head"></h3>
+            <p id="r-line"></p>
+            <p class="t-label">Çözüm</p>
+            <ol id="solution"></ol>
+            <button class="btn btn--primary" type="button" id="btn-share">Sonucu kopyala</button>
+            <textarea id="share-fallback" readonly hidden aria-label="Paylaşım metni"></textarea>
+            <p class="t-small" id="next"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="gundem" aria-labelledby="gundem-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="gundem-h">Kısa kısa ve X gündemi. <span class="muted">Tek cümlede kalan gelişmeler.</span></h2>
+      </div>
+      <ul class="rows-list" id="briefs"></ul>
+      <div class="grid" style="margin-top: var(--s-7)">
+        <div class="span-6 stack-4">
+          <p class="t-label">Günün sayısı</p>
+          <p class="day-number" id="fig-v">2.049</p>
+          <p id="fig-c"></p>
+        </div>
+        <div class="span-6 start-7 stack-4">
+          <p class="t-label">X'te gündem</p>
+          <ul class="rows-list" id="trends"><li><span class="k">Yakında</span><span>X'in resmi bağlantısı kurulunca Türkiye gündemi burada saatlik güncellenecek.</span></li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer closing footer--dark ground-inverse" id="contact" aria-labelledby="close-h">
+  <div class="wrap">
+    <div class="closing__cta close--type">
+      <div class="section-head">
+        <h2 id="close-h">Yarın sabah 06.30'da yeni baskı</h2>
+        <p>Sekiz haber ve yeni bir işlem; seri tutmak için her gün bir kez uğraman yeter.</p>
+      </div>
+      <a class="btn btn--primary btn--xl btn--wide" href="#haberler">Bugünün özetini oku<svg class="m-arrow" viewBox="0 0 12 12" aria-hidden="true"><path class="m-arrow__stem" d="M1 6h8"/><path class="m-arrow__head" d="M4.5 2.5 8 6l-3.5 3.5"/></svg></a>
+    </div>
+    <div class="closing__links">
+      <div class="grid">
+        <div class="span-6 stack-4">
+          <a class="nav__logo" href="#top">Kısaca</a>
+          <p class="footer__lede">Türkiye ve dünyadan günün haberleri, kaynaklarıyla ve kısaca.</p>
+        </div>
+        <div class="span-2 footer__col"><h3>Haberler</h3><ul><li><a href="#haberler">Bugün</a></li><li><a href="#gundem">Kısa kısa</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Oyun</h3><ul><li><a href="#oyun">Günün İşlemi</a></li></ul></div>
+        <div class="span-2 footer__col"><h3>Gündem</h3><ul><li><a href="#gundem">X gündemi</a></li></ul></div>
+      </div>
+      <div class="footer__legal">
+        <span>&copy; 2026 Kısaca &nbsp; <span id="asof"></span></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script id="kisaca-data" type="application/json">{
   "date": "2026-11-17",
   "dateLabel": "17 Kasım 2026, Salı",
   "edition": "Akşam baskısı",
@@ -591,9 +405,7 @@ a:hover { color: var(--accent); }
     {"tag": "Avrupa", "text": "AB, Rusya'nın en zengin kadını ve Wildberries'in kurucusu Tatyana Kim'e yaptırım uyguladı.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}},
     {"tag": "BM", "text": "128 ülke, hedefini insan müdahalesi olmadan seçen otonom silahlara bağlayıcı sınırlar için Cenevre'de bir araya geldi.", "source": {"name": "10 Things", "url": "https://www.10things.news/p/10-things-global-news-17th-november-e83"}}
   ]
-}
-</script>
-
+}</script>
 <script>
 /* GAME-CORE-START */
 function xmur3(str) {
@@ -672,418 +484,10 @@ function genPuzzle(dateStr) {
 }
 function starsFor(diff) { return diff === 0 ? 3 : diff <= 5 ? 2 : diff <= 10 ? 1 : 0; }
 /* GAME-CORE-END */
-
-(function () {
-  'use strict';
-  const $ = function (s) { return document.querySelector(s); };
-  const el = function (tag, cls, text) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text != null) e.textContent = text;
-    return e;
-  };
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ================= Haberler ================= */
-  let DATA = null;
-  try { DATA = JSON.parse(document.getElementById('kisaca-data').textContent); } catch (e) { DATA = null; }
-
-  function linkTo(src) {
-    const a = el('a', null, src.name);
-    a.href = src.url; a.target = '_blank'; a.rel = 'noopener';
-    return a;
-  }
-  function renderNews() {
-    if (!DATA) return;
-    $('#folio-date').textContent = DATA.dateLabel;
-    $('#folio-ed').textContent = DATA.edition + ' · ' + DATA.stories.length + ' haber · ~' + DATA.readMin + ' dk';
-    $('#asof').textContent = DATA.asOf;
-    ['#quick', '#stories', '#briefs'].forEach(function (s) { $(s).innerHTML = ''; });
-
-    const q = $('#quick');
-    DATA.quick.forEach(function (line) { q.appendChild(el('li', null, line)); });
-
-    const box = $('#stories');
-    DATA.stories.forEach(function (s, i) {
-      const art = el('article', 'story' + (i === 0 ? ' lead' : ''));
-      art.appendChild(el('div', 'story-num', String(i + 1).padStart(2, '0')));
-      const body = el('div', 'story-body');
-      body.appendChild(el('p', 'kicker', s.tags.join(' · ')));
-      body.appendChild(el('h3', null, s.title));
-      body.appendChild(el('p', 'summary', s.summary));
-      if (s.why) {
-        const w = el('p', 'why');
-        w.appendChild(el('b', null, 'Neden önemli? '));
-        w.appendChild(document.createTextNode(s.why));
-        body.appendChild(w);
-      }
-      if (s.note) body.appendChild(el('p', 'note', s.note));
-      const src = el('p', 'src');
-      src.appendChild(document.createTextNode('Kaynak: '));
-      s.sources.forEach(function (x, j) {
-        if (j) src.appendChild(document.createTextNode(' · '));
-        src.appendChild(linkTo(x));
-      });
-      body.appendChild(src);
-      art.appendChild(body);
-      box.appendChild(art);
-
-      if (DATA.figure && i + 1 === DATA.figureAfter) {
-        const f = el('aside', 'figure');
-        f.setAttribute('aria-label', 'Günün sayısı');
-        f.appendChild(el('div', 'big', DATA.figure.value));
-        const wrapP = el('div');
-        wrapP.appendChild(el('p', 'eyebrow', 'Günün sayısı'));
-        wrapP.appendChild(el('p', 'cap', DATA.figure.caption));
-        const fs = el('p', 'src');
-        fs.appendChild(document.createTextNode('Kaynak: '));
-        fs.appendChild(linkTo(DATA.figure.source));
-        wrapP.appendChild(fs);
-        f.appendChild(wrapP);
-        box.appendChild(f);
-      }
-    });
-
-    const ul = $('#briefs');
-    DATA.briefs.forEach(function (b) {
-      const li = el('li');
-      li.appendChild(el('span', 'tag', b.tag));
-      const t = el('span');
-      t.appendChild(document.createTextNode(b.text + ' '));
-      const s = el('span', 'bsrc');
-      s.appendChild(linkTo(b.source));
-      t.appendChild(s);
-      li.appendChild(t);
-      ul.appendChild(li);
-    });
-  }
-  renderNews();
-
-  /* Güncel baskıyı Supabase'den al; alınamazsa sayfadaki yedek baskı kalır. */
-  const SB_URL = 'https://rhwymmgrvvudrdhnmhwk.supabase.co';
-  const SB_KEY = 'sb_publishable_XxZ7ATjRIupBvnF0Fy5N6A_EQAC1Reg';
-  try {
-    fetch(SB_URL + '/rest/v1/editions?select=edition_date,data&published=eq.true&order=edition_date.desc&limit=1', {
-      headers: { apikey: SB_KEY, Accept: 'application/json' }
-    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
-      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; renderNews(); }
-    }).catch(function () {});
-  } catch (e) { /* çevrimdışı: yedek baskı */ }
-
-  /* ===== X gündemi ===== */
-  (function () {
-    $('#xg').hidden = false;
-    fetch(SB_URL + '/rest/v1/x_trends?select=captured_at,rank,name,post_count,note&order=captured_at.desc,rank.asc&limit=30', {
-      headers: { apikey: SB_KEY, Accept: 'application/json' }
-    }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
-      if (!rows || !rows.length) return;
-      const latest = rows[0].captured_at;
-      const list = $('#xg-list');
-      rows.filter(function (x) { return x.captured_at === latest; }).slice(0, 10).forEach(function (x) {
-        const li = el('li');
-        const span = el('span', null, x.name);
-        const extra = [x.post_count ? x.post_count.toLocaleString('tr-TR') + ' gönderi' : '', x.note || ''].filter(Boolean).join(' · ');
-        if (extra) span.appendChild(el('small', null, extra));
-        li.appendChild(span);
-        list.appendChild(li);
-      });
-      $('#xg-empty').hidden = true;
-      $('.xg-badge').textContent = 'Canlı';
-      $('#xg-meta').textContent = 'Son güncelleme: ' + new Date(latest).toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', dateStyle: 'medium', timeStyle: 'short' });
-    }).catch(function () {});
-  })();
-
-  /* ================= Oyun ================= */
-  const TZ = 3 * 3600e3; // Türkiye saati (UTC+3, yaz saati yok)
-  const DAY = 864e5;
-  const EPOCH = Date.UTC(2026, 10, 17);
-  const istDate = function (off) { return new Date(Date.now() + TZ + (off || 0) * DAY).toISOString().slice(0, 10); };
-  const puzzleNo = function (d) { return Math.round((Date.parse(d + 'T00:00:00Z') - EPOCH) / DAY) + 1; };
-  const store = {
-    get: function (k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
-    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* tarayıcı saklamaya izin vermiyor */ } }
-  };
-  const fmtTime = function (ms) {
-    const s = Math.max(0, Math.floor(ms / 1000));
-    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
-  };
-
-  let P = null; // bulmaca
-  let S = null; // oyun durumu
-  let msgErr = false;
-  let popId = -1, shakeId = -1, celebrate = false;
-
-  function bestOf(tiles, target) {
-    let b = null;
-    tiles.forEach(function (t) {
-      if (t.used) return;
-      const d = Math.abs(t.v - target);
-      if (!b || d < b.d) b = { v: t.v, d: d };
-    });
-    return b;
-  }
-  function freshState(date) {
-    P = genPuzzle(date);
-    const tiles = P.nums.map(function (v, i) { return { id: i, v: v, used: false }; });
-    return {
-      date: date, no: puzzleNo(date), target: P.target, tiles: tiles,
-      sel: null, op: null, hist: [], steps: [],
-      best: bestOf(tiles, P.target), start: null, end: null,
-      done: false, stars: 0, armed: false,
-      msg: 'Bir sayı seç, sonra bir işlem, sonra ikinci sayı.'
-    };
-  }
-  function save() { store.set('kisaca:islem:' + S.date, S); }
-  function say(text, isErr) { S.msg = text; msgErr = !!isErr; }
-  function snap() { return JSON.parse(JSON.stringify({ tiles: S.tiles, steps: S.steps })); }
-
-  function onTile(id) {
-    if (S.done) return;
-    const t = S.tiles[id];
-    if (!t || t.used) return;
-    if (S.start == null) S.start = Date.now();
-    S.armed = false; S.armedReveal = false;
-    if (S.sel == null || S.op == null) {
-      if (S.sel === id) { S.sel = null; say('Seçim kaldırıldı. Bir sayı seç.'); }
-      else { S.sel = id; say(t.v + ' seçildi. Şimdi bir işlem seç.'); }
-    } else if (S.sel === id) {
-      S.sel = null; S.op = null; say('Seçim kaldırıldı. Bir sayı seç.');
-    } else {
-      const a = S.tiles[S.sel];
-      const r = combine(a.v, S.op, t.v);
-      if (r.err) {
-        say(r.err === 'div' ? a.v + ' ile ' + t.v + ' tam bölünmüyor. Başka bir sayı dene.' : 'Eşit iki sayının farkı sıfır olur, bu hamle geçersiz.', true);
-        shakeId = id;
-      } else {
-        S.hist.push(snap());
-        a.used = true;
-        t.v = r.v;
-        S.steps.push(r.a + ' ' + S.op + ' ' + r.b + ' = ' + r.v);
-        S.op = null;
-        S.sel = id;
-        popId = id;
-        S.best = bestOf(S.tiles, S.target);
-        if (r.v === S.target) {
-          finish();
-        } else if (S.tiles.filter(function (x) { return !x.used; }).length === 1) {
-          S.sel = null;
-          say(S.steps[S.steps.length - 1] + '. Sayı kalmadı: geri al ya da en yakın sonuçla bitir.');
-        } else {
-          say(S.steps[S.steps.length - 1] + '. Devam et.');
-        }
-      }
-    }
-    save(); render();
-  }
-  function onOp(op) {
-    if (S.done) return;
-    S.armed = false; S.armedReveal = false;
-    if (S.sel == null) { say('Önce bir sayı seç.', true); render(); return; }
-    S.op = S.op === op ? null : op;
-    if (S.op) say(S.tiles[S.sel].v + ' ' + S.op + ' … İkinci sayıyı seç.');
-    else say(S.tiles[S.sel].v + ' seçili. Bir işlem seç.');
-    save(); render();
-  }
-  function onUndo() {
-    if (S.done || !S.hist.length) return;
-    const h = S.hist.pop();
-    S.tiles = h.tiles; S.steps = h.steps;
-    S.sel = null; S.op = null; S.armed = false;
-    S.best = bestOf(S.tiles, S.target);
-    say('Son hamle geri alındı.');
-    save(); render();
-  }
-  function onReset() {
-    if (S.done || !S.steps.length) return;
-    S.hist.push(snap());
-    S.tiles = P.nums.map(function (v, i) { return { id: i, v: v, used: false }; });
-    S.steps = [];
-    S.sel = null; S.op = null; S.armed = false;
-    S.best = bestOf(S.tiles, S.target);
-    say('Baştan başladın. İstersen geri alabilirsin.');
-    save(); render();
-  }
-  function onEnd() {
-    if (S.done) return;
-    S.armedReveal = false;
-    if (!S.armed) {
-      S.armed = true;
-      say('Tekrar dokunursan ' + S.best.v + ' ile bitirirsin (' + S.best.d + ' fark).');
-      render(); return;
-    }
-    if (S.start == null) S.start = Date.now();
-    finish();
-    save(); render();
-  }
-  function onReveal() {
-    if (S.done) return;
-    S.armed = false;
-    if (!S.armedReveal) {
-      S.armedReveal = true;
-      say('Cevaba bakarsan bugünkü oyun biter ve yıldız alamazsın. Emin misin?');
-      render(); return;
-    }
-    if (S.start == null) S.start = Date.now();
-    finish(true);
-    save(); render();
-  }
-  function finish(gaveUp) {
-    S.done = true; S.end = Date.now();
-    S.sel = null; S.op = null; S.armed = false; S.armedReveal = false;
-    S.gaveUp = !!gaveUp;
-    S.stars = gaveUp ? 0 : starsFor(S.best.d);
-    if (S.best.d === 0) celebrate = true;
-    const st = store.get('kisaca:stats') || { played: 0, exact: 0, streak: 0, max: 0, last: null };
-    if (st.last !== S.date) {
-      st.played += 1;
-      if (S.stars === 3) st.exact += 1;
-      st.streak = st.last === istDate(-1) ? st.streak + 1 : 1;
-      st.max = Math.max(st.max, st.streak);
-      st.last = S.date;
-      store.set('kisaca:stats', st);
-    }
-  }
-  function shareText() {
-    const stars = '★'.repeat(S.stars) + '☆'.repeat(3 - S.stars);
-    const res = S.best.d === 0 ? 'tam isabet' : S.best.d + ' fark';
-    const line = S.gaveUp ? 'Hedef ' + S.target + ' · cevaba baktım ' + stars
-      : 'Hedef ' + S.target + ' → ' + S.best.v + ' ' + stars + ' (' + res + ')';
-    return 'Kısaca · Günün İşlemi #' + S.no + '\n' + line + '\n' +
-      S.steps.length + ' hamle · ' + fmtTime(S.end - S.start);
-  }
-  function onShare() {
-    const btn = $('#btn-share');
-    const text = shareText();
-    const fallback = function () {
-      const ta = $('#share-fallback');
-      ta.hidden = false; ta.value = text; ta.focus(); ta.select();
-      btn.textContent = 'Metin seçili, kopyalayabilirsin';
-    };
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { btn.textContent = 'Kopyalandı ✓'; }, fallback);
-      } else fallback();
-    } catch (e) { fallback(); }
-  }
-
-  function render() {
-    $('#g-no').textContent = '#' + S.no;
-    $('#teaser-no').textContent = '#' + S.no;
-    $('#teaser-target').textContent = S.target;
-    $('#teaser-go').textContent = S.done ? (S.stars === 3 ? 'Çözdün ✓' : 'Bitti ✓') : 'Oyna ↓';
-    $('#t-num').textContent = S.target;
-    $('#t-best').textContent = S.best.v;
-    $('#t-diff').textContent = S.best.d === 0 ? 'tam isabet' : S.best.d + ' fark';
-
-    S.tiles.forEach(function (t, i) {
-      const b = document.getElementById('tile-' + i);
-      b.className = 'tile';
-      if (t.used) {
-        b.classList.add('used'); b.textContent = ''; b.disabled = true;
-        b.setAttribute('aria-label', 'Kullanıldı');
-        b.removeAttribute('aria-pressed');
-      } else {
-        b.disabled = S.done;
-        b.textContent = t.v;
-        b.setAttribute('aria-label', String(t.v));
-        b.setAttribute('aria-pressed', S.sel === i ? 'true' : 'false');
-        if (String(t.v).length > 4) b.classList.add('long');
-        if (S.sel === i) b.classList.add('sel');
-        if (!reduceMotion && popId === i) { void b.offsetWidth; b.classList.add('pop'); }
-        if (!reduceMotion && shakeId === i) { void b.offsetWidth; b.classList.add('shake'); }
-        if (!reduceMotion && celebrate) { b.classList.add('win'); b.style.animationDelay = (i * 70) + 'ms'; }
-        else b.style.animationDelay = '';
-      }
-    });
-    if (celebrate && !reduceMotion) { const tn = $('#t-num'); tn.classList.remove('flash'); void tn.offsetWidth; tn.classList.add('flash'); }
-    popId = -1; shakeId = -1; celebrate = false;
-
-    document.querySelectorAll('.op').forEach(function (b) {
-      b.classList.toggle('sel', S.op === b.dataset.op);
-      b.setAttribute('aria-pressed', S.op === b.dataset.op ? 'true' : 'false');
-    });
-    const msg = $('#msg');
-    msg.textContent = S.msg; msg.classList.toggle('err', msgErr);
-    $('#btn-undo').disabled = !S.hist.length;
-    $('#btn-reset').disabled = !S.steps.length;
-    const end = $('#btn-end');
-    end.classList.toggle('armed', S.armed);
-    end.textContent = S.armed ? S.best.v + ' ile bitir' : 'Bitir';
-    const rv = $('#btn-reveal');
-    rv.classList.toggle('armed', !!S.armedReveal);
-    rv.textContent = S.armedReveal ? 'Evet, cevabı göster' : 'Bulamadın mı? Cevabı göster';
-
-    $('#play-controls').hidden = S.done;
-    const res = $('#result');
-    res.hidden = !S.done;
-    if (S.done) {
-      const stars = $('#r-stars');
-      stars.innerHTML = '';
-      for (let i = 0; i < 3; i++) stars.appendChild(el('span', i < S.stars ? '' : 'off', '★'));
-      $('#r-head').textContent = S.gaveUp ? 'Cevap: ' + S.target + ' böyle bulunuyor'
-        : S.best.d === 0 ? 'Tam isabet!' : S.best.v + ' ile ' + S.best.d + ' farkla bitirdin';
-      $('#r-line').textContent = S.gaveUp ? 'Yarın yeni bir işlemle tekrar dene.' : S.steps.length + ' hamle · ' + fmtTime(S.end - S.start);
-      const exact = S.best.d === 0 && !S.gaveUp;
-      $('#solution-sum').textContent = exact ? 'Başka bir çözüm' : 'Cevap';
-      if (!exact) $('#solution-box').open = true;
-      const sol = $('#solution');
-      sol.innerHTML = '';
-      P.steps.forEach(function (x) { sol.appendChild(el('li', null, x)); });
-    }
-
-    const st = store.get('kisaca:stats') || { played: 0, exact: 0, streak: 0, max: 0, last: null };
-    const alive = st.last === istDate() || st.last === istDate(-1);
-    $('#s-played').textContent = st.played;
-    $('#s-exact').textContent = st.exact;
-    $('#s-streak').textContent = alive ? st.streak : 0;
-    $('#s-max').textContent = st.max;
-    tick();
-  }
-
-  function tick() {
-    if (!S) return;
-    const now = Date.now();
-    $('#g-time').textContent = fmtTime(S.start == null ? 0 : (S.done ? S.end : now) - S.start);
-    if (S.done) {
-      const left = DAY - ((now + TZ) % DAY);
-      const h = Math.floor(left / 3600e3), m = Math.floor(left / 60e3) % 60, s = Math.floor(left / 1000) % 60;
-      $('#next').textContent = 'Yeni işlem ' + h + ' sa ' + String(m).padStart(2, '0') + ' dk ' + String(s).padStart(2, '0') + ' sn sonra.';
-    }
-    if (istDate() !== S.date && (S.done || S.start == null)) { S = freshState(istDate()); save(); render(); }
-  }
-
-  function start(data) {
-    const today = istDate();
-    let saved = data && data.date === today && data.tiles ? data : store.get('kisaca:islem:' + today);
-    P = genPuzzle(today);
-    if (saved && saved.date === today && saved.target === P.target && Array.isArray(saved.tiles) && saved.tiles.length === 6) {
-      S = saved;
-      S.armed = false; S.armedReveal = false;
-      if (!S.msg) S.msg = 'Bir sayı seç, sonra bir işlem, sonra ikinci sayı.';
-    } else {
-      S = freshState(today);
-    }
-    if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(function () { return S; });
-
-    for (let i = 0; i < 6; i++) {
-      (function (idx) { document.getElementById('tile-' + idx).addEventListener('click', function () { onTile(idx); }); })(i);
-    }
-    document.querySelectorAll('.op').forEach(function (b) { b.addEventListener('click', function () { onOp(b.dataset.op); }); });
-    $('#btn-undo').addEventListener('click', onUndo);
-    $('#btn-reset').addEventListener('click', onReset);
-    $('#btn-end').addEventListener('click', onEnd);
-    $('#btn-reveal').addEventListener('click', onReveal);
-    $('#btn-share').addEventListener('click', onShare);
-    $('#teaser').addEventListener('click', function () {
-      document.getElementById('oyun').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-    });
-    render();
-    setInterval(tick, 1000);
-  }
-
-  if (window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start);
-  else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
-})();
 </script>
+<script src="app.js"></script>
+<script type="module" src="assets/system.js"></script>
+<script type="module" src="assets/motion/motion.js"></script>
+<script type="module" src="assets/layout/layout.js"></script>
 </body>
 </html>
