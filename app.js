@@ -139,6 +139,7 @@
       cs.appendChild(p);
     });
   }
+  window.KISACA_DATA = DATA;
   renderNews();
   watchReading();
 
@@ -181,7 +182,7 @@
     fetch(SB_URL + '/rest/v1/editions?select=edition_date,data&published=eq.true&order=edition_date.desc&limit=1', {
       headers: { apikey: SB_KEY, Accept: 'application/json' }
     }).then(function (r) { return r.ok ? r.json() : null; }).then(function (rows) {
-      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; renderNews(); if (watchReading.io) { watchReading.io.disconnect(); } watchReading(); }
+      if (rows && rows[0] && rows[0].data && rows[0].data.stories) { DATA = rows[0].data; window.KISACA_DATA = DATA; document.dispatchEvent(new CustomEvent('kisaca:data')); renderNews(); if (watchReading.io) { watchReading.io.disconnect(); } watchReading(); }
     }).catch(function () {});
   } catch (e) { /* çevrimdışı: yedek baskı */ }
 
@@ -290,6 +291,7 @@
   function finish(gaveUp) {
     S.done = true; S.end = Date.now(); S.sel = null; S.op = null; S.armed = null;
     S.gaveUp = !!gaveUp;
+    setTimeout(function () { document.dispatchEvent(new CustomEvent('kisaca:done', { detail: 'islem' })); }, 0);
     S.stars = gaveUp ? 0 : starsFor(S.best.d);
     var st = store.get('kisaca:stats') || { played: 0, exact: 0, streak: 0, max: 0, last: null };
     if (st.last !== S.date) {
