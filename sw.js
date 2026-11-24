@@ -1,5 +1,5 @@
 /* Kısaca: önce ağ, bağlantı yoksa son kaydedilen sayfa */
-var C = 'kisaca-v3';
+var C = 'kisaca-v4';
 self.addEventListener('install', function (e) { self.skipWaiting(); e.waitUntil(caches.open(C).then(function (c) { return c.addAll(['/', '/app.js', '/favicon.svg']); })); });
 self.addEventListener('activate', function (e) { e.waitUntil(caches.keys().then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== C; }).map(function (k) { return caches.delete(k); })); }).then(function () { return self.clients.claim(); })); });
 self.addEventListener('fetch', function (e) {

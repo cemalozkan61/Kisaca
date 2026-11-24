@@ -42,3 +42,11 @@ Sade, neyin nerede olduğu belli bir haber sitesi; Apple'ın sadeliğinden ilham
 - Kategori rozetleri: Türkiye #c8361c, Dünya #2456a6, Ekonomi #9a5b00, Spor #6b3fb0, Bilim ve Teknoloji #0f6d8c. Renk sadece rozet, kategori başlığı ve nokta için.
 - Haber kartları kenarlı ve gölgeli, başlıklar büyük; liste 01, 02… numaralı, okununca numara kiremit olur.
 - Telefonda alt sekme çubuğu (Bugün, Kategoriler, Oyun, Kısa kısa); manifest + service worker ile ana ekrana eklenebilir (PWA).
+
+
+## v4 (24 Kasım 2026): koyu tema, Cemal'in "daybit" taslağına göre
+- Zemin #0b0f0e, kart #141a18, çizgi #27312d, yazı #f3f6f1. Tek vurgu limon #c8f135 (üzerinde yazı #0b0f0e). Yazı tipi Plus Jakarta Sans 400–800.
+- Logo küçük harf "kısaca" + limon nokta; başlık çubuğunun altında limon çizgi.
+- Manşet büyük karanlık kart (kategori rengiyle gradyan + simge), yanında limon "Günlük Oyun" kartı ve Oyna butonu.
+- Bölüm başlıkları solda limon dikey çubukla. İlk 3 haber görselli kart; kalanı içi boş limon 01, 02… numaralı liste (kırmızı taslaktaki öncelik listesi).
+- Fotoğraf yok: telifsiz kaynak bulunana kadar her kategori kendi renk gradyanı ve çizgi simgesiyle gösterilir.

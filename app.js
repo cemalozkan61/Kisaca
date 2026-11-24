@@ -34,14 +34,35 @@
     list.forEach(function (x, j) { if (j) p.appendChild(document.createTextNode(', ')); p.appendChild(linkTo(x)); });
     return p;
   }
+  var ICONS = {
+    'Türkiye': '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/>',
+    'Dünya': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z"/>',
+    'Ekonomi': '<path d="M4 19h16M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/>',
+    'Spor': '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l4 2.9-1.5 4.7h-5L8 10.4z"/><path d="M12 3v4.5M21 10.5l-5 0M17.5 19.5l-3-4.4M6.5 19.5l3-4.4M3 10.5h5"/>',
+    'Bilim ve Teknoloji': '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 10h4v4h-4zM9.5 3v4M14.5 3v4M9.5 17v4M14.5 17v4M3 9.5h4M3 14.5h4M17 9.5h4M17 14.5h4"/>',
+    'İklim': '<path d="M5 19c0-8 6-13 14-14-1 8-6 14-14 14z"/><path d="M5 19l7-7"/>',
+    '_': '<path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h4"/>'
+  };
+  ICONS['Orta Doğu'] = ICONS['Ukrayna'] = ICONS['ABD'] = ICONS['Dünya'];
+  ICONS['Piyasalar'] = ICONS['Ekonomi']; ICONS['Teknoloji'] = ICONS['Bilim'] = ICONS['Bilim ve Teknoloji'];
+  function mainTag(s) { var t = s.tags.filter(function (x) { return x !== 'Manşet'; }); return t[0] || ''; }
+  function artFor(name, cls) {
+    var d = el('div', 'art' + (cls ? ' ' + cls : '')); d.setAttribute('data-c', name); d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<svg class="ico" viewBox="0 0 24 24">' + (ICONS[name] || ICONS._) + '</svg>';
+    return d;
+  }
   function renderNews() {
     if (!DATA) return;
     var s0 = DATA.stories[0];
-    $('#hero-date').textContent = DATA.dateLabel + ' · Manşet';
+    $('#hero-date').textContent = DATA.dateLabel + ' · Günün manşeti';
     $('#lead-h').textContent = s0.title;
     $('#lead-p').textContent = firstSentence(s0.summary);
     var ls = $('#lead-src'); ls.href = s0.sources[0].url;
-    ls.innerHTML = ''; ls.appendChild(document.createTextNode('Kaynak: ' + s0.sources[0].name));
+    ls.textContent = 'Kaynak: ' + s0.sources[0].name;
+    var lc = $('#lead-card'), lt = mainTag(s0);
+    lc.setAttribute('data-c', lt);
+    var oldIco = lc.querySelector('.ico'); if (oldIco) oldIco.remove();
+    lc.insertAdjacentHTML('afterbegin', '<svg class="ico" aria-hidden="true" viewBox="0 0 24 24">' + (ICONS[lt] || ICONS._) + '</svg>');
     $('#asof').textContent = DATA.asOf;
 
     var q = $('#quick'); q.innerHTML = '';
@@ -49,11 +70,25 @@
 
     var f = $('#feature'), l = $('#list');
     f.innerHTML = ''; l.innerHTML = '';
+    function row(s, id) {
+      var li = el('li'); li.setAttribute('data-k', s.title); li.setAttribute('data-c', mainTag(s)); if (id) li.id = id;
+      var d = el('div');
+      d.appendChild(chip(s));
+      d.appendChild(el('h3', null, s.title));
+      d.appendChild(el('p', null, s.summary));
+      if (s.why) d.appendChild(el('p', 'src', s.why));
+      if (s.note) d.appendChild(el('p', 'src', s.note));
+      d.appendChild(srcLine(s.sources));
+      li.appendChild(d);
+      return li;
+    }
+    l.appendChild(row(s0, 's-lead'));
     DATA.stories.forEach(function (s, i) {
       if (i === 0) return;
-      if (i < 3) {
-        var a = el('article'); a.setAttribute('data-k', s.title);
-        a.appendChild(chip(s)); a.setAttribute('data-c', s.tags.filter(function (x) { return x !== 'Manşet'; })[0] || '');
+      if (i < 4) {
+        var a = el('article'); a.setAttribute('data-k', s.title); a.setAttribute('data-c', mainTag(s));
+        a.appendChild(artFor(mainTag(s)));
+        a.appendChild(chip(s));
         a.appendChild(el('h3', null, s.title));
         a.appendChild(el('p', null, s.summary));
         if (s.why) a.appendChild(el('p', 'why', s.why));
@@ -61,26 +96,8 @@
         f.appendChild(a);
         return;
       }
-      var li = el('li'); li.setAttribute('data-k', s.title);
-      var d = el('div');
-      d.appendChild(chip(s));
-      d.appendChild(el('h3', null, s.title));
-      d.appendChild(el('p', null, s.summary));
-      if (s.note) d.appendChild(el('p', 'src', s.note));
-      d.appendChild(srcLine(s.sources));
-      li.appendChild(d);
-      l.appendChild(li);
+      l.appendChild(row(s));
     });
-    /* the lead story's full text joins the list's top so nothing is lost */
-    var li0 = el('li'); li0.setAttribute('data-k', s0.title);
-    var d0 = el('div');
-    d0.appendChild(chip(s0));
-    d0.appendChild(el('h3', null, s0.title));
-    d0.appendChild(el('p', null, s0.summary));
-    if (s0.why) d0.appendChild(el('p', 'src', s0.why));
-    d0.appendChild(srcLine(s0.sources));
-    li0.appendChild(d0);
-    l.insertBefore(li0, l.firstChild);
 
     if (DATA.figure) {
       $('#fig-v').textContent = DATA.figure.value;
@@ -139,6 +156,7 @@
     }, { rootMargin: '-45% 0px -50% 0px' });
     Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s); });
   })();
+  (function () { var t = document.getElementById('t-num'), p = document.getElementById('pc-target'); if (t && p) { var sync = function () { p.textContent = t.textContent; }; sync(); new MutationObserver(sync).observe(t, { childList: true, characterData: true, subtree: true }); } })();
   if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(function () {}); }
 
   /* how far you have read: a story counts once most of it has been on screen */
