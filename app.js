@@ -27,6 +27,7 @@
   }
   var CHEV = '<svg class="chev" viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1.5 6 6l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function cats(s) { return s.tags.filter(function (t) { return t !== 'Manşet'; }).join(' · '); }
+  function chip(s) { var t = s.tags.filter(function (x) { return x !== 'Manşet'; }); var c = el('span', 'chip', t[0] || 'Gündem'); c.setAttribute('data-c', t[0] || ''); return c; }
   function srcLine(list) {
     var p = el('p', 'src');
     p.appendChild(document.createTextNode('Kaynak: '));
@@ -52,7 +53,7 @@
       if (i === 0) return;
       if (i < 3) {
         var a = el('article'); a.setAttribute('data-k', s.title);
-        a.appendChild(el('p', 'cat', cats(s)));
+        a.appendChild(chip(s)); a.setAttribute('data-c', s.tags.filter(function (x) { return x !== 'Manşet'; })[0] || '');
         a.appendChild(el('h3', null, s.title));
         a.appendChild(el('p', null, s.summary));
         if (s.why) a.appendChild(el('p', 'why', s.why));
@@ -61,8 +62,8 @@
         return;
       }
       var li = el('li'); li.setAttribute('data-k', s.title);
-      li.appendChild(el('p', 'cat', cats(s)));
       var d = el('div');
+      d.appendChild(chip(s));
       d.appendChild(el('h3', null, s.title));
       d.appendChild(el('p', null, s.summary));
       if (s.note) d.appendChild(el('p', 'src', s.note));
@@ -72,8 +73,8 @@
     });
     /* the lead story's full text joins the list's top so nothing is lost */
     var li0 = el('li'); li0.setAttribute('data-k', s0.title);
-    li0.appendChild(el('p', 'cat', cats(s0) + ' · Manşet'));
     var d0 = el('div');
+    d0.appendChild(chip(s0));
     d0.appendChild(el('h3', null, s0.title));
     d0.appendChild(el('p', null, s0.summary));
     if (s0.why) d0.appendChild(el('p', 'src', s0.why));
@@ -103,8 +104,8 @@
     ks.hidden = !groups.length;
     groups.forEach(function (g, gi) {
       var id = 'kat-' + gi;
-      var nav = el('a', null, g.name); nav.href = '#' + id; cn.appendChild(nav);
-      var p = el('div', 'panel'); p.id = id;
+      var nav = el('a', null, g.name); nav.href = '#' + id; nav.setAttribute('data-c', g.name); cn.appendChild(nav);
+      var p = el('div', 'panel'); p.id = id; p.setAttribute('data-c', g.name);
       var h = el('h3', null, g.name); h.appendChild(el('small', null, g.items.length + ' haber'));
       p.appendChild(h);
       var u = el('ul');
@@ -123,6 +124,22 @@
   }
   renderNews();
   watchReading();
+
+  /* alt sekme çubuğu: görünen bölümü işaretle */
+  (function () {
+    var tabs = [].slice.call(document.querySelectorAll('.tabbar a'));
+    if (!tabs.length || !('IntersectionObserver' in window)) return;
+    var map = { bugun: 0, haberler: 0, kategoriler: 1, oyun: 2, kisa: 3 };
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var k = map[e.target.id];
+        tabs.forEach(function (t, i) { t.classList.toggle('on', i === k); if (i === k) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    Object.keys(map).forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s); });
+  })();
+  if ('serviceWorker' in navigator && location.protocol === 'https:') { navigator.serviceWorker.register('sw.js').catch(function () {}); }
 
   /* how far you have read: a story counts once most of it has been on screen */
   function watchReading() {

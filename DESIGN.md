@@ -34,3 +34,11 @@ Sade, neyin nerede olduğu belli bir haber sitesi; Apple'ın sadeliğinden ilham
 - Her haberin altında kaynak; yorum, uydurma rakam, alıntı yok.
 - Hap düğme, siyah menü, buzlu çift şerit, ortalanmış dev manşet kullanılmaz (Apple benzerliği).
 - Reklam alanı ileride haberler ile oyun bölümü arasına, beyaz panel dilinde eklenecek.
+
+
+## v3 (24 Kasım 2026): yeşil kaldırıldı, haberler önde, uygulama düzeni
+- Zemin #f1f1ee, mürekkep #121417, tek vurgu kiremit #c8361c (açık tonu #fbe6e1). Turkuaz/yeşil hiçbir yerde yok.
+- Oyun laciverti aynı (#10243a), hedef sayı ve seçili taş kehribar #ffb648.
+- Kategori rozetleri: Türkiye #c8361c, Dünya #2456a6, Ekonomi #9a5b00, Spor #6b3fb0, Bilim ve Teknoloji #0f6d8c. Renk sadece rozet, kategori başlığı ve nokta için.
+- Haber kartları kenarlı ve gölgeli, başlıklar büyük; liste 01, 02… numaralı, okununca numara kiremit olur.
+- Telefonda alt sekme çubuğu (Bugün, Kategoriler, Oyun, Kısa kısa); manifest + service worker ile ana ekrana eklenebilir (PWA).
